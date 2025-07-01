@@ -1,0 +1,8 @@
+[Unit]
+Description=Socket de la API de Censo Estudiantil
+
+[Socket]
+ListenStream=/run/censoestudiantil.sock
+
+[Install]
+WantedBy=sockets.target

@@ -1,0 +1,17 @@
+[Unit]
+Description=Servicio de la API de Inventario Bienes
+Requires=inventarioBienes.socket
+After=network.target
+
+[Service]
+User=usuario
+Group=www-data
+WorkingDirectory=/var/www/html/inventarioBienes
+ExecStart=/var/www/html/inventario_bienes/.venv/bin/gunicorn \
+        --access-logfile - \
+        --workers 3 \
+        --bind unix:/run/inventarioBienes.sock \
+        configuracion.wsgi:application
+
+[Install]
+WantedBy=multi-user.target

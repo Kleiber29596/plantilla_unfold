@@ -1,0 +1,154 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validación de Credenciales</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet"  href="{% static 'admin_lte/fontawesome-free/css/all.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet"  href="{% static 'admin_lte/dist/css/adminlte.min.css' %}">
+</head>
+<body class="hold-transition lockscreen">
+<!-- Automatic element centering -->
+
+
+
+  <div class="hold-transition login-page">
+
+    <div class="login-logo">
+        <a href="#"><b>Verificación de Credencial</b></a>
+    </div>
+
+    <div class="login-box">
+      <div class="card">
+        <div class="card-body login-card-body">
+
+          {% if data.cargo == "TUTOR (A) NACIONAL" %}
+            <div>
+              <h2 style="text-align:center">{{ data.nombres_apellidos }}</h2>
+              <h3 style="text-align:center">{{ data.origen }} - {{ data.cedula }}</h3>
+
+              {% if data.otra_funcion == "NO TIENE" %}
+                <p style="text-align:left">
+                  <strong style="font-size:100%">{{ data.cargo }}</strong> de <strong style="font-size:100%">{{ data.funcion }}</strong> adscrito(a) al <strong style="font-size:100%">{{ data.dependencia }}</strong>.
+                </p>
+              {% endif %}
+
+              {% if data.otra_funcion != "NO TIENE" %}
+                <p style="text-align:left">
+                <strong style="font-size:100%">{{ data.cargo }}</strong> de <strong style="font-size:100%">{{ data.funcion }}</strong> adscrito(a) al <strong style="font-size:100%">{{ data.dependencia }}</strong>. <br><br> Adicionalmente presta apoyo como <strong style="font-size:100%">{{ data.otra_funcion }}</strong> 
+                </p>
+              {% endif %}    
+
+              <p style="text-align:left">Credencial válida para el periodo <strong style="font-size:100%"> {{ data.anhio }}</strong></p>
+            </div>
+          {% endif %}
+
+          {% if data.cargo == "TUTOR (A) REGIONAL" %}
+            <div>
+
+              <h2 style="text-align:center">{{ data.nombres_apellidos }}</h2>
+              <h3 style="text-align:center">{{ data.origen }} - {{ data.cedula }}</h3>
+              
+
+              {% if data.otra_funcion == "NO TIENE" %}
+                <p v-if="otra_funcion == 'NO TIENE'" style="text-align:left">
+                  <strong style="font-size:100%">{{ data.cargo }}</strong>, en el área de <strong style="font-size:100%">{{ data.funcion }}</strong>, adscrito(a) al <strong style="font-size:100%">{{ data.dependencia }}</strong> y vinculado a la Unidad Territorial de Gestión Universitaria del Estado <strong style="font-size:100%">{{ data.entidad }}</strong>.
+                </p>
+              {% endif %}
+
+              {% if data.otra_funcion != "NO TIENE" %}
+                <p v-if="otra_funcion != 'NO TIENE'" style="text-align:left">
+                  <strong style="font-size:100%">{{ data.cargo }}</strong>, en el área de <strong style="font-size:100%">{{ data.funcion }}</strong>, adscrito(a) al <strong style="font-size:100%">{{ data.dependencia }}</strong>, <br><br> adicionalmente presta apoyo como <strong style="font-size:100%">{{ data.otra_funcion }}</strong> en la Unidad Territorial de Gestión Universitaria del Estado <strong style="font-size:100%">{{ data.entidad }}</strong>.
+                </p>
+              {% endif %}
+
+
+              <p style="text-align:left">Credencial válida para el periodo <strong style="font-size:100%">{{ anhio }}</strong></p>
+            </div>
+          {% endif %}
+
+          {% if data.cargo == "SECRETARIA SITUADA" %}
+            <div>
+
+              <h2 style="text-align:center">{{ data.nombres_apellidos }}</h2>
+              <h3 style="text-align:center">{{ data.origen }} - {{ data.cedula }}</h3>
+
+              {% if data.otra_funcion == "NO TIENE" %}
+                <p v-if="otra_funcion == 'NO TIENE'" style="text-align:left">
+                  Responsable de la <strong style="font-size:100%">{{ data.cargo }}</strong>, adscrito a la Unidad Territorial de Gestión Universitaria del Estado <strong style="font-size:100%">{{ data.entidad }}</strong>.
+                </p>
+              {% endif %}
+
+              <p style="text-align:left">Credencial válida para el periodo <strong style="font-size:100%">{{ data.anhio }}</strong></p>
+            </div>
+          {% endif %}
+
+          {% if data.cargo == "GESTION ACADEMICA" %}
+            <div>
+
+              <h2 style="text-align:center">{{ data.nombres_apellidos }}</h2>
+              <h3 style="text-align:center">{{ data.origen }} - {{ data.cedula }}</h3>
+              
+              {% if data.otra_funcion == "NO TIENE" %}
+                <p style="text-align:left">
+                  Responsable de la <strong style="font-size:100%">{{ data.cargo }}</strong>, adscrito a la Unidad Territorial de Gestión Universitaria del Estado <strong style="font-size:100%">{{ data.entidad }}</strong>.
+                </p>
+              {% endif %}
+
+              <p style="text-align:left">Credencial válida para el periodo <strong style="font-size:100%">{{ data.anhio }}</strong></p>
+            </div>
+          {% endif %}
+
+          {% if data.cargo == "COMUNALIZACION" %}
+            <div>
+
+              <h2 style="text-align:center">{{ data.nombres_apellidos }}</h2>
+              <h3 style="text-align:center">{{ data.origen }} - {{ data.cedula }}</h3>
+
+              <p v-if="otra_funcion == 'NO TIENE'" style="text-align:left">
+                Responsable de la <strong style="font-size:100%">{{ data.cargo }}</strong>, adscrito a la Unidad Territorial de Gestión Universitaria del Estado <strong style="font-size:100%">{{ data.entidad }}</strong>.
+              </p>
+
+              <p style="text-align:left">Credencial válida para el periodo <strong style="font-size:100%">{{ data.anhio }}</strong></p>
+            </div>
+          {% endif %}
+
+          {% if data.cargo == "GESTION GENERAL" %}
+            <div>
+
+              <h2 style="text-align:center">{{ data.nombres_apellidos }}</h2>
+              <h3 style="text-align:center">{{ data.origen }} - {{ data.cedula }}</h3>
+
+              <h2 style="text-align:center">{{ data.nombre_apellido }}</h2>
+              
+              {% if data.otra_funcion == "NO TIENE" %}
+                <p v-if="otra_funcion == 'NO TIENE'" style="text-align:left">
+                Responsable de la <strong style="font-size:100%">{{ data.cargo }}</strong>, adscrito a la Unidad Territorial de Gestión Universitaria del Estado <strong style="font-size:100%">{{ data.entidad }}</strong>.
+                </p>
+              {% endif %}
+
+              <p style="text-align:left">Credencial válida para el periodo <strong style="font-size:100%">{{ data.anhio }}</strong></p>
+            </div>
+          {% endif %}
+
+        </div><!-- /.login-card-body -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+<!-- jQuery -->
+<script src="{% static 'admin_lte/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'admin_lte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Ignore Django migrations
+*/migrations/
+!*/migrations/__init__.py
+
+# Ignore environment files
+.env
+*.env
+
+# Ignore compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore logs
+*.log
+logs/

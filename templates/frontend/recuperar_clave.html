@@ -1,0 +1,231 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recuperar Clave AutoGestión UNEM</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet"  href="{% static 'admin_lte/fontawesome-free/css/all.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet"  href="{% static 'admin_lte/dist/css/adminlte.min.css' %}">
+</head>
+
+<body class="hold-transition lockscreen">
+<!-- Automatic element centering -->
+<div class="lockscreen-wrapper">
+  <div class="lockscreen-logo">
+    <a href="#"><b>Recuperar Clave AutoGestión </b>UNEM</a>
+  </div>
+  <!-- User name -->
+  <div class="lockscreen-name">UNEM</div>
+
+  <!-- START LOCK SCREEN ITEM -->
+  <div class="lockscreen-item">
+    <!-- lockscreen image -->
+    <div class="lockscreen-image">
+      <img src="{% static 'img/logo.jpg' %}" alt="User Image">
+    </div>
+    <!-- /.lockscreen-image -->
+
+  </div>
+  <!-- /.lockscreen-item -->
+  <div class="help-block text-center">
+    Prototipo
+  </div>
+  
+    <br>
+    <label for="password">Ingrese su nueva clave: </label>
+    <br>
+    <input id="password" type="text" name="password" placeholder="Ingrese su nueva clave aquí" required>
+    <br>
+    <br>
+
+    <input id="uidb64"  type = "hidden" name = "uidb64" required value = "{{ uidb64 }}" >
+    <input id="token"   type = "hidden"  name = "token"  required value = "{{ token }}"  >
+
+    <input id="boton_recuperar_clave" type="submit" value="Recuperar clave">
+
+  <div class="lockscreen-footer text-center">
+    UNEM &copy; 2023 
+    <BR>
+    <b><a href="https://unem.edu.ve" class="text-black">UNEM Portal</a></b><br>
+  </div>
+</div>
+<!-- /.center -->
+
+<!-- jQuery -->
+<script src="{% static 'admin_lte/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'admin_lte/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<script>jQuery(function ($)
+  {
+      $( document ).ready(function()
+      {
+          $("#password").val('');
+      });  
+  
+      // Evento Blur (Cuando pierde el focus el input dato_consulta) 
+      $("#boton_recuperar_clave").on('click', function()
+      {
+          var password  = $("#password").val();
+          var uidb64    = $("#uidb64").val();
+          var token     = $("#token").val();
+  
+          if (password == null || password =='')
+          {
+            alert('Por favor ingrese su nueva clave!')
+          }
+          
+          else
+          {
+            $.ajax({
+                  method: "PATCH",
+                  url: 'http://localhost:8000/cuenta/recuperar-clave-correo/finalizar/',
+                  data: 
+                    { 
+                      password  : password,
+                      uidb64    : uidb64,
+                      token     : token,
+                    },
+                  dataType: "JSON",
+  
+                  statusCode:
+                  {
+                    200: function()
+                      {
+                        alert('Todo Bien');
+                      },
+                      404: function()
+                      {
+                        alert('404')
+                        $("#nacionalidad").val('SERVIDOR NO ENCONTRADO');
+                        $('#boton_enviar').prop('disabled', true);
+                      },
+  
+                      400: function()
+                      {
+                        alert('400')
+                        $("#nacionalidad").val('NO ENCONTRADO');
+                        $('#boton_enviar').prop('disabled', true);
+                      },
+                      
+                      500: function()
+                      {
+                        alert('500')
+                        $("#nacionalidad").val('ERROR DE CONEXION');
+                        $('#boton_enviar').prop('disabled', true);
+                      },
+                  },
+              })
+              .done(function(data)
+              {})
+              
+              .fail(function(jqXHR, textStatus)
+              {})
+              
+              .always(function(jqXHR, textStatus)
+              {});
+          }
+      });
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+          // Evento Change llamado cada vez que cambia el select 'estado'
+          $("#estado").on('change', function()
+          {
+          // Si el valor del select es diferente de nulo
+          if($(this).val() != "")
+              {
+                  // Deshabilita el atributo disabled
+                  $("#piso").attr('disabled', false);
+              }
+          });
+  
+  
+          // Evento Change llamado cada vez que cambia el select 'piso'
+          $("#piso").on('change', function()
+          {
+          // Si el valor del select es diferente de nulo
+          if($(this).val() != "")
+              {
+                  // Deshabilita el atributo disabled
+                  $("#motivo_visita").attr('disabled', false);
+              }
+          });
+  
+          // Evento Blur (Cuando pierde el focus el input motivo_visita) 
+          $("#motivo_visita").on('change', function()
+          {
+              if($(this).val() != "")
+              {
+                  $("#destino").attr('disabled', false);
+              }
+          });
+  
+          // Evento Blur (Cuando pierde el focus el input destino) 
+          $("#destino").on('change', function()
+          {
+              if($(this).val() != "")
+              {
+                  $("#boton_enviar").attr('disabled', false);
+              }
+          });
+  
+  
+  
+  
+          $("#boton_limpiar" ).click(function()
+          {
+              $('#encabezado').show();
+              $('#formulario_datos').hide();
+  
+              $("#dato_consulta").val('');
+              $('#dato_consulta').prop('disabled', false);
+              
+              $("#cedula").val('');
+              $("#primer_nombre").val('');
+              $("#segundo_nombre").val('');
+              $("#primer_apellido").val('');
+              $("#segundo_apellido").val('');
+              
+              $("#estado").val('');
+              $('#estado').prop('disabled', false);
+  
+              $("#piso").val('');
+              $('#piso').prop('disabled', true);
+  
+              $("#motivo_visita").val('');
+              $('#motivo_visita').prop('disabled', true);
+  
+              $("#destino").val('');
+              $('#destino').prop('disabled', true)
+  
+              $('#boton_enviar').prop('disabled', false);
+              $('#boton_enviar').show();
+          });
+  });
+  </script>
+  
+</body>
+</html>
