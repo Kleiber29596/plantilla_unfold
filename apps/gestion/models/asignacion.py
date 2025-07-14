@@ -1,7 +1,11 @@
-from django.db import models
+from django.db                          import models
 from apps.auxiliares.models.bien        import Bien
+from django.db.models                   import Q   # solo si usas una condición
+from django.core.exceptions             import ValidationError
 
 class Asignacion (models.Model):
+   
+   
    
    estatus  =      (
                     ('Activo',   'Activo'),
@@ -14,12 +18,34 @@ class Asignacion (models.Model):
    estatus          =  models.CharField(max_length = 20, choices=estatus, default ='Activo')
    motivo           =  models.TextField(max_length = 50, null=True, blank=True)
    
-   
+   def clean(self):
+        if self.pk
+            Asignacion.objects.filter(
+            bien=self.bien,
+            responsable=self.responsable
+        ).exclude(pk=self.pk).exists():
+            raise ValidationError(
+                'El bien seleccionado ya se asigno a este responsable.'
+            )
    class Meta:
     managed             =  True
     db_table            = 'gestion\".\"asignacion'
     verbose_name        = 'asignacion'
     verbose_name_plural = 'asignaciones'
 
+    constraints = [
+
+            # (Opcional) — solo impide duplicados cuando el estatus es “Activo”;
+            # permite varias asignaciones históricas “Inactivo”.
+        models.UniqueConstraint(
+            fields=['bien', 'responsable'],
+            condition=Q(estatus='Activo'),
+            name='uniq_bien_responsable_activo'
+        ),
+    ]
+
     def __str__(self):
         return f'{self.bien}'
+    
+
+  
