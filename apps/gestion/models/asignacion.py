@@ -19,13 +19,12 @@ class Asignacion (models.Model):
    motivo           =  models.TextField(max_length = 50, null=True, blank=True)
    
    def clean(self):
-        if self.pk
-            Asignacion.objects.filter(
+        if Asignacion.objects.filter(
             bien=self.bien,
-            responsable=self.responsable
+            estatus='Activo'
         ).exclude(pk=self.pk).exists():
             raise ValidationError(
-                'El bien seleccionado ya se asigno a este responsable.'
+                'El bien seleccionado, ya ha sido asignado a un funcionario.'
             )
    class Meta:
     managed             =  True
@@ -33,16 +32,6 @@ class Asignacion (models.Model):
     verbose_name        = 'asignacion'
     verbose_name_plural = 'asignaciones'
 
-    constraints = [
-
-            # (Opcional) — solo impide duplicados cuando el estatus es “Activo”;
-            # permite varias asignaciones históricas “Inactivo”.
-        models.UniqueConstraint(
-            fields=['bien', 'responsable'],
-            condition=Q(estatus='Activo'),
-            name='uniq_bien_responsable_activo'
-        ),
-    ]
 
     def __str__(self):
         return f'{self.bien}'

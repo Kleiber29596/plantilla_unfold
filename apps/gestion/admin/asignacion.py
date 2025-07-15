@@ -7,8 +7,8 @@ from apps.gestion.forms  import AsignacionForm
 @admin.register(Asignacion)
 class AsignacionAdmin(admin.ModelAdmin):
     list_display = ('bien', 'responsable', 'ubicacion',  'estatus_badge')
-    list_filter = ('estatus', 'fecha_asignacion')
-    search_fields = ('bien__nombre', 'responsable__nombre', 'ubicacion__nombre', 'observacion') # Ajusta según tus campos
+    list_filter = ('estatus', 'fecha_asignacion','ubicacion')
+    search_fields = ('bien', 'responsable__persona__cedula', 'ubicacion', 'observacion') # Ajusta según tus campos
     # form = AsignacionForm
 
 
