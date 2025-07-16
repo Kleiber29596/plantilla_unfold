@@ -2,13 +2,20 @@ from django.db                          import models
 from apps.auxiliares.models.bien        import Bien
 from django.db.models                   import Q   # solo si usas una condición
 from django.core.exceptions             import ValidationError
-from simple_history.models              import HistoricalRecords # Importa HistoricalRecords
 
 
-class Asignacion (models.Model):
+class HistoricoAsignacion (models.Model):
    
    
-   
+   OPERACIONES =   (
+                        ('+', 'INSERCIÓN'),
+                        ('~', 'MODIFICACIÓN')
+                    )
+    
+   history_id                      = models.AutoField(primary_key=True)
+   history_date                    = models.DateTimeField('Fecha',)
+   history_change_reason           = models.CharField(max_length=100, blank=True, null=True)
+   history_type                    = models.CharField('Operación', max_length=1, choices = OPERACIONES)
    estatus  =      (
                     ('Activo',   'Activo'),
                     ('Inactivo', 'Inactivo'),
@@ -19,25 +26,16 @@ class Asignacion (models.Model):
    fecha_asignacion =  models.DateField()
    estatus          =  models.CharField(max_length = 20, choices=estatus, default ='Activo')
    motivo           =  models.TextField(max_length = 50, null=True, blank=True, help_text='¿Motivo de desactivación de la asignación?')
-   history          =  HistoricalRecords() # Añade esta línea
 
-   def clean(self):
-        if Asignacion.objects.filter(
-            bien=self.bien,
-            estatus='Activo'
-        ).exclude(pk=self.pk).exists():
-            raise ValidationError(
-                'El bien seleccionado, ya ha sido asignado a un funcionario. Desactive la asignación existente, si quiere reasignar el bien'
-            )
+  
    class Meta:
-    managed             =  True
-    db_table            = 'gestion\".\"asignacion'
+    managed             =  False
+    db_table            = 'public\".\"gestion_historicalasignacion'
     verbose_name        = 'asignacion'
     verbose_name_plural = 'asignaciones'
 
 
-    def __str__(self):
-        return f'{self.bien}'
+   
     
 
   

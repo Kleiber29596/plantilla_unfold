@@ -1,17 +1,24 @@
 from django.contrib      import admin
 from django.utils.html   import format_html
 from apps.gestion.models import Asignacion  # Asegúrate de importar tu modelo Asignacion
-from apps.gestion.forms  import AsignacionForm
 
 
 @admin.register(Asignacion)
 class AsignacionAdmin(admin.ModelAdmin):
     list_display = ('bien', 'responsable', 'ubicacion',  'estatus_badge')
     list_filter = ('estatus', 'fecha_asignacion','ubicacion')
-    search_fields = ('bien', 'responsable__persona__cedula', 'ubicacion', 'observacion') # Ajusta según tus campos
-    # form = AsignacionForm
+    search_fields = ('bien', 'responsable__persona__cedula0', 'ubicacion', 'observacion') # Aj0000000usta según tus campos
 
 
+    def get_readonly_fields(self, request, obj=None):
+
+        if obj and obj.estatus != 'Inactivo':
+            # (por ejemplo, es 'Inactivo', 'Pendiente', etc.)
+            return self.readonly_fields + ('motivo',)
+        elif obj and obj.estatus != 'Activo':
+            return self.readonly_fields
+        else:
+            return self.readonly_fields + ('motivo',)
     
     def estatus_badge(self, obj):
         if obj.estatus == 'Activo':
