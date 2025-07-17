@@ -1,5 +1,5 @@
 from django.db                          import models
-from apps.auxiliares.models.bien        import Bien
+from apps.gestion.models.bien        import Bien
 from django.db.models                   import Q   # solo si usas una condición
 from django.core.exceptions             import ValidationError
 
@@ -20,9 +20,9 @@ class HistoricoAsignacion (models.Model):
                     ('Activo',   'Activo'),
                     ('Inactivo', 'Inactivo'),
                 )
-   bien             =  models.ForeignKey(Bien,                          on_delete = models.RESTRICT )
-   responsable      =  models.ForeignKey('auxiliares.Responsable',      on_delete = models.RESTRICT)
-   ubicacion        =  models.ForeignKey('auxiliares.Unidad',           on_delete = models.RESTRICT, null=True, blank=True)
+   bien             =  models.ForeignKey(Bien,                          on_delete = models.RESTRICT, related_name='historico_asignacion_bien' )
+   responsable      =  models.ForeignKey('auxiliares.Responsable',      on_delete = models.RESTRICT, related_name='historico_asignacion_responsable')
+   ubicacion        =  models.ForeignKey('auxiliares.Unidad',           on_delete = models.RESTRICT, related_name='historico_asignacion_unidad', null=True, blank=True)
    fecha_asignacion =  models.DateField()
    estatus          =  models.CharField(max_length = 20, choices=estatus, default ='Activo')
    motivo           =  models.TextField(max_length = 50, null=True, blank=True, help_text='¿Motivo de desactivación de la asignación?')

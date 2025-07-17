@@ -32,7 +32,7 @@ def reporte_general(request):
     # print(divisiones)
     
     for division in divisiones:
-        bienes = Asignacion.objects.filter(ubicacion=division.pk)
+        bienes = Asignacion.objects.filter(ubicacion=division.pk, estatus='Activo')
         print(bienes)
         # Crear nueva hoja con nombre de la división
         ws = wb.copy_worksheet(plantilla)

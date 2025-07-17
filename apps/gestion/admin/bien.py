@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.auxiliares.models.bien import Bien
+from apps.gestion.models.bien import Bien
 from django.utils.html import format_html
 
 
@@ -7,7 +7,7 @@ from django.utils.html import format_html
 class BienAdmin(admin.ModelAdmin):
     # ¡Aquí está el cambio clave! Usa 'estado_badge' en lugar de 'estado'
     list_filter = ('categoria', 'cod_bien',)
-    fields = ['categoria', 'modelo', 'caracteristicas', 'tipo_uso', 'valor_unitario', 'condicion', 'estatus']
+    fields = ['cod_bien','categoria', 'modelo', 'caracteristicas', 'tipo_uso', 'valor_unitario', 'condicion', 'estatus']
     list_display = ('categoria', 'cod_bien', 'estado_badge',)
 
     def estado_badge(self, obj):

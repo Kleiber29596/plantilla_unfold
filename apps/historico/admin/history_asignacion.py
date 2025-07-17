@@ -2,10 +2,10 @@
 
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin # Importa SimpleHistoryAdmin
-from apps.gestion.models.history_asignacion import HistoricoAsignacion
+from apps.historico.models.history_asignacion import HistoricoAsignacion
 
 @admin.register(HistoricoAsignacion)
 class HistoryAsignacionAdmin(SimpleHistoryAdmin): # Hereda de SimpleHistoryAdmin
-    list_display = ('bien', 'responsable', 'ubicacion','fecha_asignacion','estatus','motivo', 'history_type')
+    list_display = ('bien', 'responsable', 'ubicacion','estatus','motivo', 'history_type','history_date')
 
     # Puedes añadir tus propias configuraciones de admin aquí

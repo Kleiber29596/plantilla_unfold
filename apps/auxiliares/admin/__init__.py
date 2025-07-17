@@ -1,4 +1,4 @@
-from apps.auxiliares.admin.bien           import BienAdmin
+from apps.gestion.admin.bien           import BienAdmin
 from apps.auxiliares.admin.categoria      import CategoriaAdmin
 from apps.auxiliares.admin.marca          import MarcaAdmin
 from apps.auxiliares.admin.modelo         import ModeloAdmin 

@@ -1,4 +1,3 @@
-from apps.auxiliares.models.bien         import Bien
 from apps.auxiliares.models.marca        import Marca
 from apps.auxiliares.models.modelo       import Modelo
 from apps.auxiliares.models.categoria    import Categoria

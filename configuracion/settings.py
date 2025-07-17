@@ -32,6 +32,7 @@ LOCAL_APPS  =   [
                     'apps.frontend',
                     'apps.auxiliares',
                     'apps.gestion',
+                    'apps.historico'
                 ]
 
 THIRD_APPS =    [
@@ -329,13 +330,16 @@ JAZZMIN_SETTINGS = {
 
                         # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
                         "order_with_respect_to":    [
-                                                        # 'historico',
+                                                      
                                                         # 'visitas',
                                                         # 'users',
-                                                        # 'auth'
-                                                        'cuenta',
-                                                        'gestion',
                                                         
+                                                        'cuenta',
+                                                        'auth',
+                                                        'gestion',
+                                                        'auxiliares',
+                                                        'historico',
+                                                          
                                                        
                                                     ],
 

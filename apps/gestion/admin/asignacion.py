@@ -8,7 +8,7 @@ class AsignacionAdmin(admin.ModelAdmin):
     list_display = ('bien', 'responsable', 'ubicacion',  'estatus_badge')
     list_filter = ('estatus', 'fecha_asignacion','ubicacion')
     search_fields = ('bien', 'responsable__persona__cedula0', 'ubicacion', 'observacion') # Aj0000000usta según tus campos
-
+    
 
     def get_readonly_fields(self, request, obj=None):
 
