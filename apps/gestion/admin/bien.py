@@ -7,11 +7,11 @@ from django.utils.html import format_html
 class BienAdmin(admin.ModelAdmin):
     # ¡Aquí está el cambio clave! Usa 'estado_badge' en lugar de 'estado'
     list_filter = ('categoria', 'cod_bien',)
-    fields = ['cod_bien','categoria', 'modelo', 'caracteristicas', 'tipo_uso', 'valor_unitario', 'condicion', 'estatus']
+    fields = ['cod_bien','categoria', 'modelo', 'caracteristicas', 'tipo_uso', 'valor_unitario', 'condicion', 'estatus','fecha_adquisicion']
     list_display = ('categoria', 'cod_bien', 'estado_badge',)
 
     def estado_badge(self, obj):
-            if obj.estatus == 'Operativo':
+            if obj.estatus == 'Asignado':
                 return format_html('<span class="badge bg-success">{}</span>', obj.estatus)
             elif obj.estatus == 'Desincorporado':
                 return format_html('<span class="badge bg-danger">{}</span>', obj.estatus)

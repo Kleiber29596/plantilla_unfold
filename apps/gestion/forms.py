@@ -1,5 +1,5 @@
 from django import forms
-from .models import Asignacion
+from apps.gestion.models.asignacion import Asignacion
 
 
 class AsignacionForm(forms.ModelForm):

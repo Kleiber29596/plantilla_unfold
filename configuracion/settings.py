@@ -12,8 +12,7 @@ import os
 BASE_DIR            = Path(__file__).resolve().parent.parent
 SECRET_KEY          = config('SECRET_KEY')
 DEBUG               = config('DEBUG')
-# ALLOWED_HOSTS     = config('ALLOWED_HOSTS', cast=Csv())
-ALLOWED_HOSTS       = []
+ALLOWED_HOSTS       = config('ALLOWED_HOSTS', cast=Csv())
 
 
 BASE_APPS   =   [
