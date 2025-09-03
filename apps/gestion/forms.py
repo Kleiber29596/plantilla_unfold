@@ -15,7 +15,8 @@ class AsignacionForm(forms.ModelForm):
         fields = [
             "bien",
             "responsable",
-            "ubicacion",
+            "dependencia",
+            "subdependencia"
             "fecha_asignacion",
             "estatus",
             "motivo",
@@ -47,7 +48,8 @@ class AsignacionForm(forms.ModelForm):
         labels = {
             "bien": "Bien",
             "responsable": "Responsable",
-            "ubicacion": "Ubicación",
+            "dependencia": "Dependencia",
+            "subdependencia": "Subdependencia",
             "fecha_asignacion": "Fecha de asignación",
             "estatus": "Estatus",
             "motivo": "Motivo",

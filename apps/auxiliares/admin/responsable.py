@@ -10,7 +10,7 @@ from apps.auxiliares.forms              import ResponsableForm
 class AsignacionInline(admin.TabularInline):
     model = Asignacion
     extra = 0
-    fields = ('bien', 'ubicacion', 'fecha_asignacion','estatus')  # Ajusta los campos visibles
+    fields = ('bien', 'dependencia', 'fecha_asignacion','estatus')  # Ajusta los campos visibles
     # readonly_fields = fields  
     # can_delete = False  
 
@@ -21,21 +21,20 @@ class AsignacionInline(admin.TabularInline):
 @admin.register(Responsable)
 class ResponsableAdmin(admin.ModelAdmin):
 
-    def generar_reporte(self, obj):
-        url = reverse("reporte_bienes", args=[obj.id])
-        return mark_safe(f'<a class="btn btn-secondary btn-sm" href="{url}"><i class="fas fa-print" title="Generar reporte"></i></a>')
+    # def generar_reporte(self, obj):
+    #     url = reverse("reporte_bienes", args=[obj.id])
+    #     return mark_safe(f'<a class="btn btn-secondary btn-sm" href="{url}"><i class="fas fa-print" title="Generar reporte"></i></a>')
 
     def nombre(self, obj):
         return f"{obj.persona.nombres_apellidos}"
     
 
-    generar_reporte.short_description = "Reporte"
    
     class Media:
         js = ('js/autocompletar_cargo.js',)
         
-    list_display        = ('nombre','unidad','generar_reporte')
-    list_filter         = ('unidad',)
+    list_display        = ('nombre','dependencia','subdependencia')
+    list_filter         = ('dependencia',)
     form                = ResponsableForm
 
     inlines = [AsignacionInline]

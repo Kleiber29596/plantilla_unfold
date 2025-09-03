@@ -1,12 +1,13 @@
 from django.db import models
-from apps.auxiliares.models.unidad import Unidad
+from apps.auxiliares.models.dependencia import Subdependencia, Dependencia
 from apps.auxiliares.models.persona import Persona
 
 class Responsable(models.Model):
 
     
     persona                 = models.OneToOneField(Persona, on_delete=models.PROTECT, related_name='datos_persona')
-    unidad                  = models.ForeignKey("Unidad", null= True, blank=True, on_delete=models.PROTECT, related_name='unidad')
+    dependencia             = models.ForeignKey(Dependencia, null= True, blank=True, on_delete=models.PROTECT, related_name='dependencia')
+    subdependencia          = models.ForeignKey(Subdependencia, null= True, blank=True, on_delete=models.PROTECT, related_name='subdependencia')
     
     class Meta:
         managed             =  True

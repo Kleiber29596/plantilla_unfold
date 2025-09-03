@@ -6,6 +6,6 @@ from apps.historico.models.history_asignacion import HistoricoAsignacion
 
 @admin.register(HistoricoAsignacion)
 class HistoryAsignacionAdmin(SimpleHistoryAdmin): # Hereda de SimpleHistoryAdmin
-    list_display = ('bien', 'responsable', 'ubicacion','estatus','motivo', 'history_type','history_date')
+    list_display = ('bien', 'responsable', 'subdependencia','estatus','motivo', 'history_type','history_date')
 
     # Puedes añadir tus propias configuraciones de admin aquí
