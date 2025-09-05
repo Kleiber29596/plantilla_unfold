@@ -18,4 +18,4 @@ class Responsable(models.Model):
 
 
     def __str__(self):
-        return f'{self.persona.origen}-{self.persona.cedula}-{self.persona.nombres_apellidos}'
+        return f'{self.persona.nombres_apellidos}'

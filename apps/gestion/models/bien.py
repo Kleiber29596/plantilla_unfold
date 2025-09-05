@@ -22,12 +22,9 @@ class Bien(models.Model):
     # Estados
    
     estado  =   (
-                    ('Incorporado',            'Incorporado'),
-                    ('Asignado',               'Asignado'),
-                    ('En traslado',            'En traslado'),
-                    ('Prestado',               'Prestado'),
+                    ('Disponible',             'Disponible'),
                     ('Desincorporado',         'Desincorporado'),
-                    ('Mantenimiento',          'Mantenimiento'),
+                  
                 )
     categoria            = models.ForeignKey(Categoria, verbose_name="Categoría",  on_delete=models.PROTECT)
     modelo               = models.ForeignKey(Modelo, null=True, blank=True, on_delete=models.PROTECT)
@@ -36,7 +33,7 @@ class Bien(models.Model):
     tipo_uso             = models.CharField('tipo de uso', max_length=50, choices=uso,)
     valor_unitario       = models.DecimalField('valor unitario', max_digits=10, decimal_places=2, help_text='Valor unitario del bien')
     condicion            = models.CharField('condición', max_length=50, help_text='Condición física del bien', default='Nuevo', choices=CONDICION)
-    estatus              = models.CharField('estatus', max_length=20, help_text='Estado del bien',  default='Incorporado', choices=estado)
+    estatus              = models.CharField('estatus', max_length=20, help_text='Estado del bien',  default='Disponible', choices=estado)
     fecha_adquisicion    = models.DateField('fecha de adqusición')
 
 
@@ -48,4 +45,4 @@ class Bien(models.Model):
         verbose_name_plural = 'Bienes'
 
     def __str__(self):
-        return f'{self.cod_bien} {self.modelo} {self.categoria} '
+        return f'{self.cod_bien} - {self.categoria} {self.modelo}'

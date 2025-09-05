@@ -12,4 +12,4 @@ class Modelo(models.Model):
         verbose_name_plural = 'Modelos'
 
     def __str__(self):
-        return f'Modelo: {self.descripcion} Marca: {self.marca}'
+        return f'{self.descripcion} - {self.marca}'

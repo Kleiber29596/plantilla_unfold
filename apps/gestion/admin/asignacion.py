@@ -1,15 +1,15 @@
 from django.contrib      import  admin
 from django.utils.html   import  format_html
 from apps.gestion.models import  Asignacion  # Asegúrate de importar tu modelo Asignacion
-# from apps.gestion.forms  import  AsignacionForm
+from apps.gestion.forms  import  AsignacionForm
 
 @admin.register(Asignacion)
 class AsignacionAdmin(admin.ModelAdmin):
-    list_display = ('bien',    'fecha', 'estatus_badge')
-    list_filter = ('estatus', 'bien__cod_bien', 'responsable__persona__cedula')
-    fields = ['bien',  'dependencia','subdependencia','fecha_asignacion','responsable',   'estatus', 'motivo']
+    list_display = ('bien', 'dependencia', 'subdependencia', 'responsable','fecha', 'estatus_badge')
+    list_filter = ('estatus', 'bien__cod_bien', 'dependencia','subdependencia', 'responsable__persona__cedula')
+    fields = ['bien',  'dependencia','subdependencia','responsable', 'estatus', 'motivo', 'fecha_asignacion']
     search_fields = ('bien',  'observacion') 
-    # form = AsignacionForm
+    form = AsignacionForm
     class Media:
         js = (
             'js/deshabilitar_asignacion.js', # Ruta a tu archivo JavaScript

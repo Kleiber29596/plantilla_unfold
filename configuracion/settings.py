@@ -32,6 +32,7 @@ LOCAL_APPS  =   [
                     'apps.auxiliares',
                     'apps.gestion',
                     'apps.historico'
+
                 ]
 
 THIRD_APPS =    [
@@ -40,6 +41,7 @@ THIRD_APPS =    [
                     'ninja_jwt',
                     'django_rest_passwordreset',
                     'import_export',
+                    'smart_selects',
                     #'maintenance_mode',
                 ]
 
@@ -243,10 +245,10 @@ JAZZMIN_SETTINGS = {
                         "site_title": "Admin",
 
                         # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-                        "site_header": "OTIC- Inventario bienes",
+                        "site_header": "SIA-OTIC",
 
                         # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-                        "site_brand": "OTIC- Inventario bienes",
+                        "site_brand": "SIA-OTIC",
 
                         # Logo to use for your site, must be present in static files, used for brand on top left
                         "site_logo": "img/logomppe.png",

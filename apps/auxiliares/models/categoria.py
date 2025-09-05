@@ -2,7 +2,7 @@ from django.db import models
 
 class Categoria(models.Model):
     
-    descripcion         = models.CharField(max_length=255)
+    descripcion         = models.CharField('Categoría', max_length=255)
     cod_catalogo        = models.CharField(max_length=255, null=True)
 
     

@@ -13,10 +13,6 @@ urlpatterns =   [
                     path('consultar-cargo/', consultar_cargo, name='consultar_cargo'),
                     path('', include('apps.gestion.urls')),
                     path("", api.urls),
-
-                                                                                            
-
-                    
-
+                    path('chaining/', include('smart_selects.urls')),                                                                      
 
                 ]

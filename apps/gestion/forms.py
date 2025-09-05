@@ -16,7 +16,7 @@ class AsignacionForm(forms.ModelForm):
             "bien",
             "responsable",
             "dependencia",
-            "subdependencia"
+            "subdependencia",
             "fecha_asignacion",
             "estatus",
             "motivo",
