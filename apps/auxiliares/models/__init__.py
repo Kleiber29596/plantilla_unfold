@@ -4,5 +4,5 @@ from apps.auxiliares.models.categoria    import Categoria
 from apps.auxiliares.models.responsable  import Responsable
 from apps.auxiliares.models.dependencia  import Dependencia
 from apps.auxiliares.models.persona      import Persona
-
+from apps.auxiliares.models.motivo       import Motivo
 

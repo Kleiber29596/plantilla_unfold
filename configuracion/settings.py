@@ -15,8 +15,10 @@ DEBUG               = config('DEBUG')
 ALLOWED_HOSTS       = config('ALLOWED_HOSTS', cast=Csv())
 
 
-BASE_APPS   =   [
+BASE_APPS   =   [              
                     'jazzmin',
+                    'dal',
+                    'dal_select2',
                     'django.contrib.admin',
                     'django.contrib.auth',
                     'django.contrib.contenttypes',
@@ -24,6 +26,8 @@ BASE_APPS   =   [
                     'django.contrib.messages',
                     'django.contrib.staticfiles',
                     'simple_history',
+                      # Las aplicaciones que necesitas para django-autocomplete-light
+                   
                 ]
 
 LOCAL_APPS  =   [
@@ -41,7 +45,8 @@ THIRD_APPS =    [
                     'ninja_jwt',
                     'django_rest_passwordreset',
                     'import_export',
-                    'smart_selects',
+                    
+                  
                     #'maintenance_mode',
                 ]
 

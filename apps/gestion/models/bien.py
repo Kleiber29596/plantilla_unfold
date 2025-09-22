@@ -34,7 +34,7 @@ class Bien(models.Model):
     valor_unitario       = models.DecimalField('valor unitario', max_digits=10, decimal_places=2, help_text='Valor unitario del bien')
     condicion            = models.CharField('condición', max_length=50, help_text='Condición física del bien', default='Nuevo', choices=CONDICION)
     estatus              = models.CharField('estatus', max_length=20, help_text='Estado del bien',  default='Disponible', choices=estado)
-    fecha_adquisicion    = models.DateField('fecha de adqusición')
+    fecha_adquisicion    = models.DateField('fecha de adqusición', null=True, blank=True)
 
 
 

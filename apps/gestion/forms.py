@@ -1,5 +1,6 @@
 from django import forms
 from apps.gestion.models.asignacion import Asignacion
+from dal_select2.widgets            import ModelSelect2 
 
 
 class AsignacionForm(forms.ModelForm):
@@ -42,6 +43,17 @@ class AsignacionForm(forms.ModelForm):
                     "rows": 3,
                     "cols": 40,
                 }
+            ),
+
+            'dependencia': ModelSelect2(url='dependencia-autocomplete'),
+            'subdependencia': ModelSelect2(
+                url='subdependencia-autocomplete',
+                forward=('dependencia',)
+            ),
+
+            "responsable": ModelSelect2(
+                url="responsable-autocomplete",
+                forward=("subdependencia",),  # recibe el valor de subdependencia
             ),
         }
 

@@ -10,10 +10,12 @@ class AsignacionAdmin(admin.ModelAdmin):
     fields = ['bien',  'dependencia','subdependencia','responsable', 'estatus', 'motivo', 'fecha_asignacion']
     search_fields = ('bien',  'observacion') 
     form = AsignacionForm
+
     class Media:
-        js = (
-            'js/deshabilitar_asignacion.js', # Ruta a tu archivo JavaScript
-        )
+        js = ('js/deshabilitar_asignacion.js',)
+        css = {
+                'all': ('//cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css',)
+            }
     
     # def get_readonly_fields(self, request, obj=None):
 
