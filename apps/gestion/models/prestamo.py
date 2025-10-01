@@ -17,11 +17,10 @@ class Prestamo(models.Model):
    
     fecha_inicio                = models.DateField(default=timezone.now)
     fecha_final                 = models.DateField()
-    encargado                   = models.CharField(max_length=150)  # nombre de la persona encargada
-    ubicacion_departamento      = models.ForeignKey(Dependencia,on_delete=models.RESTRICT, related_name="prestamos")
-    motivo                      = models.ForeignKey(Motivo, on_delete=models.RESTRICT, related_name="prestamos"    )
+    departamento_entrega        = models.ForeignKey(Dependencia,    on_delete=models.RESTRICT, related_name="entrega", null=True, blank=True)
+    departamento_recibe         = models.ForeignKey(Dependencia,   on_delete=models.RESTRICT, related_name="recibe", null=True, blank=True)
+    motivo                      = models.ForeignKey(Motivo,         on_delete=models.RESTRICT, related_name="prestamos"    )
     
-
     # Control de devolución
     fecha_devolucion        = models.DateField(null=True, blank=True)
     status                  = models.CharField(max_length=20, choices=ESTADOS_PRESTAMO, default="EN_PRESTAMO")
@@ -87,3 +86,35 @@ class DetallePrestamo(models.Model):
         verbose_name_plural = 'detalles de préstamos'
         unique_together    = ('prestamo', 'bien')
         ordering           = ['bien__cod_bien']
+
+    
+
+class ResponsablePrestamo(models.Model):
+    """Responsables asociados a un préstamo con rol específico."""
+
+    ROLES = [
+        ("RESP_ENTREGA", "Responsable entrega"),
+        ("TESTIGO_ENTREGA", "Testigo entrega"),
+        ("RESP_RECIBE", "Responsable recibe"),
+        ("TESTIGO_RECIBE", "Testigo recibe"),
+    ]
+
+    prestamo = models.ForeignKey(
+        Prestamo, on_delete=models.CASCADE, related_name="responsables"
+    )
+    responsable = models.ForeignKey(
+        "auxiliares.Responsable",
+        on_delete=models.CASCADE,
+        related_name="responsables_prestamo"
+    )
+    rol = models.CharField(max_length=20, choices=ROLES)
+
+    class Meta:
+        managed = True
+        db_table = 'gestion"."responsable_prestamo'
+        verbose_name = 'responsable de préstamo'
+        verbose_name_plural = 'responsables de préstamos'
+
+    def __str__(self):
+        return f"{self.responsable.persona} - {self.get_rol_display()}"
+

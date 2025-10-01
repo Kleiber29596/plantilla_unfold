@@ -1,10 +1,11 @@
 from ninja import Router
 from typing import List
 from django.shortcuts import get_object_or_404
-
-from apps.auxiliares.schemas.auxiliares import MotivoOut, DependenciaOut, SubdependenciaOut
+from apps.auxiliares.schemas.auxiliares import MotivoOut, DependenciaOut, SubdependenciaOut, ResponsableOut
 from apps.auxiliares.models.motivo import Motivo
 from apps.auxiliares.models.dependencia import Dependencia, Subdependencia
+from apps.auxiliares.models.responsable import Responsable
+from django.db.models                   import F
 
 
 
@@ -32,3 +33,13 @@ def listar_dependencias(request):
 def listar_subdependencias(request, dependencia_id: int):
     dependencia = get_object_or_404(Dependencia, id=dependencia_id)
     return dependencia.subdependencias.all()
+
+# -------- RESPONSABLES ------------
+
+@router.get("/responsables", response=List[ResponsableOut])
+def listar_responsables(request):
+    responsables = Responsable.objects.select_related("persona", "dependencia").annotate(
+        persona_nombre=F("persona__nombres_apellidos"),
+        dependencia_nombre=F("dependencia__nombre"),
+    )
+    return responsables

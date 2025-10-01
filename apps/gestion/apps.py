@@ -7,4 +7,4 @@ class GestionConfig(AppConfig):
     name = 'apps.gestion' # Asegúrate de que el nombre de tu aplicación sea correcto
 
     def ready(self):
-        import apps.gestion.signals.estatus_asignacion # Importa el módulo de señales aquí
+        import apps.gestion.signals.signals # Importa el módulo de señales aquí

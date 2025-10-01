@@ -5,3 +5,4 @@ from apps.auxiliares.admin.modelo         import ModeloAdmin
 from apps.auxiliares.admin.responsable    import Responsable
 from apps.auxiliares.admin.persona        import PersonaAdmin
 from apps.auxiliares.admin.dependencia    import DependenciaAdmin
+from apps.auxiliares.admin.motivo         import MotivoAdmin

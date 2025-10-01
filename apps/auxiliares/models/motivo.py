@@ -1,7 +1,7 @@
 from django.db import models
 
 
-tipo = (
+tipo_movimientos = (
 
     ('Desincorporación', 'Desincorporación'),
     ('Préstamo', 'Préstamo'),
@@ -10,7 +10,7 @@ tipo = (
 
 class Motivo(models.Model):
     descripcion = models.CharField(max_length=255)
-    tipo        = models.CharField(max_length=100) 
+    tipo        = models.CharField('Tipo movimiento',max_length=100, choices=tipo_movimientos) 
     activo      = models.BooleanField(default=True)
 
     class Meta:

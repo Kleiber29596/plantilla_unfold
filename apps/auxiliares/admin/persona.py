@@ -13,6 +13,6 @@ class PersonaAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('js/autocompletar_cargo.js',)
-        
-    list_display        = ('nombres_apellidos','origen','cedula','cargo')
+
+    list_display        = ('nombres_apellidos','nacionalidad','cedula','cargo')
 

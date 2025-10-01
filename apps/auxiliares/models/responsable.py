@@ -1,21 +1,40 @@
-from django.db import models
-from apps.auxiliares.models.dependencia import Subdependencia, Dependencia
-from apps.auxiliares.models.persona import Persona
+from django.db                          import models
+from apps.gestion.models.prestamo       import Prestamo
+from apps.auxiliares.models.persona     import Persona
+from apps.auxiliares.models.dependencia import Dependencia, Subdependencia
+
 
 class Responsable(models.Model):
+    TIPO_RESPONSABLE = [
+        ("Patrimonial", "Patrimonial"),
+        ("Registrador de bienes", "Registrador de bienes"),
+        ("Custodio", "Custodio"),
+    ]
 
-    
-    persona                 = models.OneToOneField(Persona, on_delete=models.PROTECT, related_name='datos_persona')
-    dependencia             = models.ForeignKey(Dependencia, null= True, blank=True, on_delete=models.PROTECT, related_name='dependencia')
-    subdependencia          = models.ForeignKey(Subdependencia, null= True, blank=True, on_delete=models.PROTECT, related_name='subdependencia')
-    
+    persona = models.ForeignKey(
+        Persona,
+        on_delete=models.CASCADE,
+        related_name="responsabilidades"
+    )
+    tipo = models.CharField(max_length=50, choices=TIPO_RESPONSABLE)
+    resolucion = models.CharField(max_length=100, blank=True, null=True)
+    fecha_resolucion = models.DateField(blank=True, null=True)
+    gaceta = models.CharField(max_length=50, blank=True, null=True)
+    fecha_gaceta = models.DateField(blank=True, null=True)
+    dependencia = models.ForeignKey(
+        Dependencia, 
+        on_delete=models.RESTRICT, 
+        related_name="responsables"
+    )
+    subdependencia = models.ForeignKey(
+        Subdependencia, 
+        on_delete=models.RESTRICT, 
+        related_name="responsables", 
+        null=True, blank=True
+    )
+
     class Meta:
         managed             =  True
         db_table            = 'auxiliares\".\"responsable'
         verbose_name        = 'Responsable'
         verbose_name_plural = 'Responsables'
-        
-
-
-    def __str__(self):
-        return f'{self.persona.nombres_apellidos}'

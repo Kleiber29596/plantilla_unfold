@@ -4,7 +4,7 @@ from django.db.models                   import Q
 from django.core.exceptions             import ValidationError
 from simple_history.models              import HistoricalRecords 
 from apps.auxiliares.models.dependencia import Dependencia, Subdependencia
-from smart_selects.db_fields            import ChainedForeignKey
+
 
 
 class Asignacion (models.Model):

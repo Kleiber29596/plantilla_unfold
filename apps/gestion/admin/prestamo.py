@@ -12,22 +12,20 @@ class DetallePrestamoInline(admin.TabularInline):
 @admin.register(Prestamo)
 class PrestamoAdmin(admin.ModelAdmin):
     list_display = (
-        "encargado",
-        "ubicacion_departamento",
         "fecha_inicio",
         "fecha_final",
         "fecha_devolucion",
         "status",
     )
-    list_filter = ("status", "fecha_inicio", "fecha_final", "ubicacion_departamento")
-    search_fields = ("bien__codigo", "bien__descripcion", "encargado", "motivo")
+    list_filter = ("status", "fecha_inicio", "fecha_final")
+    search_fields = ("bien__codigo", "bien__descripcion", "motivo")
     date_hierarchy = "fecha_inicio"
     ordering = ("-fecha_inicio",)
     inlines = [DetallePrestamoInline]
 
     fieldsets = (
         ("Información del Préstamo", {
-            "fields": ("fecha_inicio", "fecha_final", "encargado", "ubicacion_departamento", "motivo")
+            "fields": ("fecha_inicio", "fecha_final", "motivo")
         }),
         # ("Contrato", {
         #     "fields": ("contrato_digital", "contrato_fisico"),

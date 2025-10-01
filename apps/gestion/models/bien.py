@@ -1,5 +1,5 @@
 from django.db import models
-from apps.auxiliares.models.categoria import Categoria
+from apps.auxiliares.models.categoria import Categoria, Subcategoria
 from apps.auxiliares.models.marca import Marca
 from apps.auxiliares.models.modelo import Modelo
 
@@ -27,6 +27,8 @@ class Bien(models.Model):
                   
                 )
     categoria            = models.ForeignKey(Categoria, verbose_name="Categoría",  on_delete=models.PROTECT)
+    subcategoria         = models.ForeignKey(Subcategoria, verbose_name="Subcategoría", on_delete=models.PROTECT)
+    marca                = models.ForeignKey(Marca, null=True, blank=True, on_delete=models.PROTECT)
     modelo               = models.ForeignKey(Modelo, null=True, blank=True, on_delete=models.PROTECT)
     caracteristicas      = models.TextField(null=True, blank=True)
     cod_bien             = models.CharField('codigo de bien', max_length=50, unique=True, help_text='Código de bien Nacional')
@@ -40,7 +42,7 @@ class Bien(models.Model):
 
     class Meta:
         managed             =  True
-        db_table            = 'auxiliares\".\"bien'
+        db_table            = 'gestion\".\"bien'
         verbose_name        = 'Bien'
         verbose_name_plural = 'Bienes'
 

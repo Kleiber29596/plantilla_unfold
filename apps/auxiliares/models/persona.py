@@ -10,7 +10,7 @@ class Persona(models.Model):
                     (E,  'E'),
                 )
 
-    origen                  = models.CharField('Origen',              max_length =   1,   choices = ORIGEN                            )
+    nacionalidad            = models.CharField('Nacionalidad',      max_length =   1,   choices = ORIGEN                            )
     cedula                  = models.IntegerField('Cédula',                                                                           )
     nombres_apellidos       = models.CharField('Nombres/Apellidos',   max_length=255)
     cargo                   = models.CharField('cargo',   max_length=100)
@@ -24,4 +24,4 @@ class Persona(models.Model):
 
 
     def __str__(self):
-        return f'{self.nombres_apellidos} - {self.origen} - {self.cedula}'
+        return f'{self.nombres_apellidos} - {self.nacionalidad} - {self.cedula}'
