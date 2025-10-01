@@ -63,7 +63,6 @@ class DetallePrestamo(models.Model):
     CONDICION = [
         ('BUENO', 'En buen estado'),
         ('DAÑADO', 'Dañado'),
-        ('PERDIDO', 'Perdido'),
     ]
 
     prestamo = models.ForeignKey(Prestamo, on_delete=models.CASCADE, related_name="detalles")

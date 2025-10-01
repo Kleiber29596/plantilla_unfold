@@ -163,7 +163,7 @@ class ActaPrestamoService:
         Cédula de Identidad Nº {self.cedula_directora_zona}, Directora de la Zona Educativa del Distrito Capital,
         Resolución N°. DM/N° ------- de fecha --------- Publicado en la Gaceta Oficial N°------de fecha ----------
         hacemos constar por medio de la presente Acta, que a partir de esta fecha, la Dirección General de la Oficina de Tecnología de la Información y la Comunicación procede a entregar
-        en calidad de préstamo por () mes a la <b>{self.prestamo.ubicacion_departamento.nombre}</b>,
+        en calidad de préstamo por () mes a la <b>{self.prestamo.departamento_recibe.nombre}</b>,
         ubicada en piso --- de este Ministerio, para su uso y custodia los Bienes Públicos que se especifican a continuación:
         """
         story.append(Paragraph(texto_intro, self.styles['JustifyFormal']))
@@ -215,7 +215,7 @@ class ActaPrestamoService:
         fecha_actual_str = timezone.now().strftime("%d días del mes de %B de %Y")
 
         texto_cierre = f"""
-        Este préstamo provisional será de uso exclusivo de la <b>{self.prestamo.ubicacion_departamento.nombre}</b> y no podrán ser transferidos a ningún otro ente en particular, ya que están incluidos en el inventario de la Dirección General de la Oficina de Tecnología de la Información y la Comunicación, de igual forma tendrán la obligación de mantener los equipos en perfectas condiciones de uso.
+        Este préstamo provisional será de uso exclusivo de la <b>{self.prestamo.departamento_recibe.nombre}</b> y no podrán ser transferidos a ningún otro ente en particular, ya que están incluidos en el inventario de la Dirección General de la Oficina de Tecnología de la Información y la Comunicación, de igual forma tendrán la obligación de mantener los equipos en perfectas condiciones de uso.
         A tales efectos se levanta la presente acta por duplicado en la ciudad de Caracas, a los {fecha_actual_str}.
         """
         story.append(Paragraph(texto_cierre, self.styles['JustifyFormal']))
