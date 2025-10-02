@@ -17,6 +17,10 @@ class DetallePrestamoIn(Schema):
     bien_id: int
     condicion_devolucion: Optional[str] = None
 
+class ResponsablePrestamoIn(Schema):
+    responsable_id: int
+    rol: str
+
 
 class PrestamoIn(Schema):
     fecha_inicio: date
@@ -25,7 +29,7 @@ class PrestamoIn(Schema):
     departamento_recibe_id: Optional[int]
     motivo_id: int
     bienes: List[DetallePrestamoIn]
-    responsables: List[int]
+    responsables: List[ResponsablePrestamoIn]
 
 
 

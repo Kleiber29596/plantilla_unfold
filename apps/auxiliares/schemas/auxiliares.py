@@ -45,18 +45,17 @@ class ResponsableIn(Schema):
     class Config:
         from_attributes = True
 
-
 # ---------- Schema OUT (detalle de un responsable) ----------
 class ResponsableOut(Schema):
     id: int
-    persona_id: str
+    persona: str
     tipo: str
     resolucion: Optional[str] = None
     fecha_resolucion: Optional[date] = None
     gaceta: Optional[str] = None
     fecha_gaceta: Optional[date] = None
     dependencia: DependenciaOut
-    subdependencia: SubdependenciaOut
+    subdependencia: Optional[SubdependenciaOut]  # 👈 ahora opcional
 
     class Config:
         from_attributes = True

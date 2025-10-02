@@ -9,6 +9,8 @@ from apps.auxiliares.views.categoria        import router as categoria_router
 from apps.auxiliares.views.modelo           import router as modelo_router    
 from apps.gestion.views.prestamos           import router as prestamos_router
 from apps.auxiliares.views.auxiliares       import router as auxiliares_router
+from apps.gestion.views.indicadores         import router as indicadores_router
+
 
 api = NinjaExtraAPI(
                         title           = "Plantilla",
@@ -25,6 +27,8 @@ api.add_router("/categoria/", categoria_router)
 api.add_router("/modelo/",    modelo_router)
 api.add_router("/prestamos/", prestamos_router)
 api.add_router("/auxiliares/",auxiliares_router)
+api.add_router("/indicadores/",indicadores_router)
+
 
 # api.register_controllers(ResetPasswordController)
 api.register_controllers(MyTokenObtainPairController)

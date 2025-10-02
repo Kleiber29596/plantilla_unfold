@@ -35,11 +35,21 @@ def listar_subdependencias(request, dependencia_id: int):
     return dependencia.subdependencias.all()
 
 # -------- RESPONSABLES ------------
-
 @router.get("/responsables", response=List[ResponsableOut])
 def listar_responsables(request):
-    responsables = Responsable.objects.select_related("persona", "dependencia").annotate(
-        persona_nombre=F("persona__nombres_apellidos"),
-        dependencia_nombre=F("dependencia__nombre"),
-    )
-    return responsables
+    responsables = Responsable.objects.select_related("persona", "dependencia", "subdependencia")
+
+    salida = []
+    for r in responsables:
+        salida.append({
+            "id": r.id,
+            "persona": str(r.persona),  # 👈 conversión explícita
+            "tipo": r.tipo,
+            "resolucion": r.resolucion,
+            "fecha_resolucion": r.fecha_resolucion,
+            "gaceta": r.gaceta,
+            "fecha_gaceta": r.fecha_gaceta,
+            "dependencia": r.dependencia,
+            "subdependencia": r.subdependencia,  # Puede ser None
+        })
+    return salida

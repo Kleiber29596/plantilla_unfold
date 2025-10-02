@@ -27,11 +27,12 @@ def create_prestamo(request, data: PrestamoIn):
                 prestamo=prestamo,
                 bien_id=bien.bien_id
             )
-        for responsable in data.responsables:
+          # Guardar responsables con rol
+        for r in data.responsables:
             ResponsablePrestamo.objects.create(
                 prestamo=prestamo,
-                responsable_id=responsable
-                
+                responsable_id=r.responsable_id,
+                rol=r.rol
             )
 
         return {"message": "Préstamo registrado con éxito", "id": prestamo.id}
@@ -127,8 +128,8 @@ def generar_acta_prestamo(request, prestamo_id: int):
     # Traer el préstamo optimizando consultas
     prestamo = get_object_or_404(
         Prestamo.objects
-        .select_related('ubicacion_departamento')  # traer dependencia
-        .prefetch_related('detalles__bien'),      # traer detalles y sus bienes
+        .select_related('departamento_entrega', 'departamento_recibe', 'motivo')  # corregido
+        .prefetch_related('detalles__bien'),  # traer detalles y sus bienes
         id=prestamo_id
     )
 
@@ -141,6 +142,7 @@ def generar_acta_prestamo(request, prestamo_id: int):
     service.generar_pdf(response)
 
     return response
+
 
 
 # ---------- Schemas de ResponsablesPréstamos ----------
