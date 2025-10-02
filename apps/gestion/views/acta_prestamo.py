@@ -11,6 +11,11 @@ from reportlab.graphics.shapes import Drawing, Rect, Line
 from reportlab.graphics import renderPDF
 from django.utils import timezone
 import os
+from apps.gestion.utils.acta_prestamo import header_footer_combined 
+
+
+
+
 
 class ActaPrestamoService:
     """
@@ -92,61 +97,11 @@ class ActaPrestamoService:
             leading=10
         ))
 
-    def _crear_banner_encabezado(self):
-        """Crea un banner formal y elegante para el encabezado del documento."""
-        drawing = Drawing(7.5 * inch, 1.4 * inch)
-        
-        banner_rect = Rect(0, 0.3 * inch, 7.5 * inch, 0.9 * inch)
-        banner_rect.fillColor = colors.Color(0.88, 0.88, 0.88)  # Gris claro elegante
-        banner_rect.strokeColor = colors.Color(0.5, 0.5, 0.5)  # Gris medio
-        banner_rect.strokeWidth = 1.5
-        drawing.add(banner_rect)
-        
-        # Línea decorativa superior gruesa
-        top_line = Line(0, 1.2 * inch, 7.5 * inch, 1.2 * inch)
-        top_line.strokeColor = colors.Color(0.3, 0.3, 0.3)  # Gris oscuro
-        top_line.strokeWidth = 3
-        drawing.add(top_line)
-        
-        # Línea decorativa inferior
-        bottom_line = Line(0, 0.3 * inch, 7.5 * inch, 0.3 * inch)
-        bottom_line.strokeColor = colors.Color(0.3, 0.3, 0.3)
-        bottom_line.strokeWidth = 3
-        drawing.add(bottom_line)
-        
-        # Líneas laterales para enmarcar
-        left_line = Line(0, 0.3 * inch, 0, 1.2 * inch)
-        left_line.strokeColor = colors.Color(0.4, 0.4, 0.4)
-        left_line.strokeWidth = 2
-        drawing.add(left_line)
-        
-        right_line = Line(7.5 * inch, 0.3 * inch, 7.5 * inch, 1.2 * inch)
-        right_line.strokeColor = colors.Color(0.4, 0.4, 0.4)
-        right_line.strokeWidth = 2
-        drawing.add(right_line)
-        
-        return drawing
+
 
     def _generar_encabezado_formal(self):
         """Genera un encabezado formal con banner y información institucional."""
         story = []
-        
-        story.append(self._crear_banner_encabezado())
-        story.append(Spacer(1, 0.15 * inch))
-        
-        story.append(Paragraph(
-            "<b>REPÚBLICA BOLIVARIANA DE VENEZUELA</b>", 
-            self.styles['InfoInstitucional']
-        ))
-        story.append(Paragraph(
-            "<b>MINISTERIO DEL PODER POPULAR PARA LA EDUCACIÓN</b>", 
-            self.styles['SubtituloFormal']
-        ))
-        story.append(Paragraph(
-            "OFICINA DE TECNOLOGÍA DE LA INFORMACIÓN Y LA COMUNICACIÓN", 
-            self.styles['InfoInstitucional']
-        ))
-        story.append(Spacer(1, 0.25 * inch))
         
         # Título principal con más prominencia
         story.append(Paragraph(
@@ -172,7 +127,7 @@ class ActaPrestamoService:
 
     def _generar_tabla_bienes_formal(self):
         """Genera la tabla con los detalles de los bienes con diseño formal."""
-        data = [['<b>Cantidad</b>', '<b>Descripción</b>', '<b>Valor Unitario</b>', '<b>Valor Total</b>']]
+        data = [['Cantidad', 'Descripción', 'Valor Unitario', 'Valor Total']]
         valor_total_general = 0
 
         detalles = self.prestamo.detalles.select_related('bien').all()
@@ -187,25 +142,26 @@ class ActaPrestamoService:
             data.append([cantidad, descripcion, f"Bs. {valor_unitario:,.2f}", f"Bs. {valor_total_item:,.2f}"])
 
         # Total
-        data.append(['', '', '<b>Total Bs.</b>', f"<b>Bs. {valor_total_general:,.2f}</b>"])
+        data.append(['', '', 'Total Bs.', f"Bs. {valor_total_general:,.2f}"])
 
         table_style = TableStyle([
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, -1), 10),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.Color(0.6, 0.6, 0.6)),  # Encabezado gris más oscuro
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),  # Encabezado gris más oscuro
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
             ('GRID', (0, 0), (-1, -1), 0.8, colors.Color(0.4, 0.4, 0.4)),  # Líneas grises más definidas
             ('BOX', (0, 0), (-1, -1), 1.5, colors.Color(0.3, 0.3, 0.3)),  # Borde más prominente
             ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.Color(0.96, 0.96, 0.96)]),  # Filas alternadas sutiles
-            ('BACKGROUND', (0, -1), (-1, -1), colors.Color(0.75, 0.75, 0.75)),  # Fila total más destacada
+            ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),  # Fila total más destacada
             ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
             ('TOPPADDING', (0, 0), (-1, -1), 8),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
         ])
 
-        table = Table(data, colWidths=[1 * inch, 3.2 * inch, 1.4 * inch, 1.4 * inch])
+                # En _generar_tabla_bienes_formal
+        table = Table(data, colWidths=[0.9 * inch, 3.2 * inch, 1.4 * inch, 1.4 * inch])  # Suma: 6.9
         table.setStyle(table_style)
         return table
 
@@ -256,36 +212,15 @@ class ActaPrestamoService:
         story.append(firmas_table)
         return story
 
-    def _crear_footer_formal(self):
-        """Crea un footer formal y elegante para el documento."""
-        drawing = Drawing(7.5 * inch, 1 * inch)
-        
-        # Línea principal del footer
-        footer_line = Line(0.5 * inch, 0.7 * inch, 7 * inch, 0.7 * inch)
-        footer_line.strokeColor = colors.Color(0.5, 0.5, 0.5)
-        footer_line.strokeWidth = 1.5
-        drawing.add(footer_line)
-        
-        # Líneas decorativas laterales
-        left_accent = Line(0.5 * inch, 0.65 * inch, 0.5 * inch, 0.75 * inch)
-        left_accent.strokeColor = colors.Color(0.4, 0.4, 0.4)
-        left_accent.strokeWidth = 2
-        drawing.add(left_accent)
-        
-        right_accent = Line(7 * inch, 0.65 * inch, 7 * inch, 0.75 * inch)
-        right_accent.strokeColor = colors.Color(0.4, 0.4, 0.4)
-        right_accent.strokeWidth = 2
-        drawing.add(right_accent)
-        
-        return drawing
+
 
     def generar_pdf(self, response):
         """Método público que orquesta la generación del PDF con diseño formal."""
         doc = SimpleDocTemplate(
             response, 
             pagesize=letter,
-            topMargin=0.6 * inch,
-            bottomMargin=1.2 * inch,
+            topMargin=1.5 * inch,
+            bottomMargin=2.0 * inch,
             leftMargin=0.8 * inch,
             rightMargin=0.8 * inch
         )
@@ -295,23 +230,5 @@ class ActaPrestamoService:
         story.append(self._generar_tabla_bienes_formal())
         story.append(Spacer(1, 0.4 * inch))
         story.extend(self._generar_firmas_formal())
-        story.append(Spacer(1, 0.3 * inch))
-        story.append(self._crear_footer_formal())
         
-        footer_text = """
-        <para align="center" spaceAfter="6">
-        <font size="9" color="#555555">
-        <b>REPÚBLICA BOLIVARIANA DE VENEZUELA</b><br/>
-        <b>MINISTERIO DEL PODER POPULAR PARA LA EDUCACIÓN</b><br/>
-        Oficina de Tecnología de la Información y la Comunicación
-        </font>
-        </para>
-        <para align="center">
-        <font size="8" color="#777777">
-        Caracas - Venezuela | Document mo Oficial | Acta de Préstamo
-        </font>
-        </para>
-        """
-        story.append(Paragraph(footer_text, self.styles['FooterStyle']))
-        
-        doc.build(story)
+        doc.build(story, onFirstPage=header_footer_combined, onLaterPages=header_footer_combined)
