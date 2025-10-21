@@ -1,8 +1,4 @@
-from apps.auxiliares.models.marca        import Marca
-from apps.auxiliares.models.modelo       import Modelo
-from apps.auxiliares.models.categoria    import Categoria
-from apps.auxiliares.models.responsable  import Responsable
-from apps.auxiliares.models.dependencia  import Dependencia
-from apps.auxiliares.models.persona      import Persona
-from apps.auxiliares.models.motivo       import Motivo
-
+from .catalogo_bienes import Estado, CondicionBien, Color, Marca, Modelo, TipoBien
+from .dependencia import Dependencia
+from .subdependencia import Subdependencia
+from .personal import Personal

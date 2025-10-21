@@ -34,8 +34,8 @@ LOCAL_APPS  =   [
                     'apps.cuenta',
                     'apps.frontend',
                     'apps.auxiliares',
-                    'apps.gestion',
-                    'apps.historico'
+                    'apps.bien',
+                   
 
                 ]
 
@@ -329,9 +329,8 @@ JAZZMIN_SETTINGS = {
                         # Hide these models when generating side menu (e.g auth.user)
                         "hide_models":  [
                                             'django_rest_passwordreset.resetpasswordtoken',
-                                            # 'gestion.inventario',
-                                            'auxiliares.responsable',
-                                            'gestion.director'
+                    
+                                
                                         ],
 
                         # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
@@ -342,10 +341,8 @@ JAZZMIN_SETTINGS = {
                                                         
                                                         'cuenta',
                                                         'auth',
-                                                        'gestion',
-                                                        'auxiliares',
-                                                        'historico',
-                                                          
+                                                        'bien',
+                                                        'auxiliares',                                                          
                                                        
                                                     ],
 
