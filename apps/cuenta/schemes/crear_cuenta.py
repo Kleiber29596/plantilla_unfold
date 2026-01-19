@@ -32,13 +32,13 @@ class CreateUserSchema(ModelSchema):
                     ]
 
     @model_validator("username")
-    def unique_name(cls, value_data):
+    def unique_username(cls, value_data):
         if User.objects.filter(username__icontains = value_data).exists():
             raise APIException("Este nombre de usuario ya esta registrado", status_code = status.HTTP_400_BAD_REQUEST)
         return value_data
 
     @model_validator("email")
-    def unique_name(cls, value_data):
+    def unique_email(cls, value_data):
         if User.objects.filter(email__icontains = value_data).exists():
             raise APIException("Este correo ya esta registrado", status_code = status.HTTP_400_BAD_REQUEST)
         return value_data

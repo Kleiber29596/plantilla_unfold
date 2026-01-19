@@ -1,1 +1,1 @@
-from . import catalogo_bienes, dependencia, subdependencia, personal
+from . import catalogo_bienes, dependencia, subdependencia

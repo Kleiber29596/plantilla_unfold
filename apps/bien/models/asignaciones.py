@@ -2,16 +2,19 @@ from django.db import models
 from apps.auxiliares.models import  Estado
 class Asignacion(models.Model):
 
-    nro_asignacion = models.CharField(max_length=20, unique=True, editable=False)
+    nro_asignacion   = models.CharField(max_length=20, unique=True, editable=False)
     fecha_asignacion = models.DateField(auto_now_add=True)
-    dependencia = models.ForeignKey('auxiliares.Dependencia', on_delete=models.PROTECT)
-    subdependencia = models.ForeignKey('auxiliares.Subdependencia', on_delete=models.PROTECT)
-    usuario = models.ForeignKey('auxiliares.Personal', on_delete=models.PROTECT)
-    observaciones = models.TextField()
-    estatus = models.ForeignKey(Estado, on_delete=models.PROTECT)
+    dependencia      = models.ForeignKey('auxiliares.Dependencia', on_delete=models.PROTECT)
+    subdependencia   = models.ForeignKey('auxiliares.Subdependencia', on_delete=models.PROTECT)
+    usuario          = models.ForeignKey('bien.Personal', on_delete=models.PROTECT)
+    observaciones    = models.TextField()
+    estatus          = models.ForeignKey(Estado, on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'bien"."asignacion'
+        verbose_name = 'Asignacion'
+        verbose_name_plural = 'Asignaciones'
+
 
 
     def save(self, *args, **kwargs):

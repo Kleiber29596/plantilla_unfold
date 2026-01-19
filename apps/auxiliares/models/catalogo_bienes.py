@@ -22,6 +22,9 @@ class CondicionBien(models.Model):
 
     class Meta:
         db_table = 'catalogo_bienes"."condicion_bien'
+        verbose_name = 'Condicion de Bien'
+        verbose_name_plural = 'Condiciones'
+
 
     def __str__(self):
         return self.nombre
@@ -31,6 +34,9 @@ class Color(models.Model):
 
     class Meta:
         db_table = 'catalogo_bienes"."color'
+        verbose_name = 'Color'
+        verbose_name_plural = 'Colores'
+
 
     def __str__(self):
         return self.nombre
