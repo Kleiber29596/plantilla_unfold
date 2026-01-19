@@ -7,6 +7,9 @@ class Devolucion(models.Model):
 
     class Meta:
         db_table = 'bien"."devolucion'
+        verbose_name = 'Devolucion'
+        verbose_name_plural = 'Devoluciones'
+
 
     def __str__(self):
         return f'Devolucion {self.id} de la Asignacion {self.asignacion.id}'

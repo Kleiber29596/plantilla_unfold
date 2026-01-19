@@ -96,6 +96,7 @@ DATABASES = {
                                     'PASSWORD':         config('CLAVE_DESARROLLO'),
                                     'HOST':             config('IP_DESARROLLO'),
                                     'PORT':             config('PUERTO_PREDETERMINADO'),
+                                    'CONN_MAX_AGE': 60,  # 🔹 Mantiene la conexión abierta 60 segundos
                                     #"ATOMIC_REQUESTS":  config('ATOMIC_REQUESTS'),
                                     # PARA LEER CON InspectDB un esquema especifico
                                     #'OPTIONS': {'options': '-c search_path=cuenta'}
@@ -286,10 +287,12 @@ JAZZMIN_SETTINGS = {
                                             # Url that gets reversed (Permissions can be added)
                                             {"name": "Inicio",  "url": "admin:index", "permissions": ["auth.view_user"]},
                                             # external url that opens in a new window (Permissions can be added)
-                                            {"name": "Reporte General",       "url": "/reporte-general/",  "new_window": True},
 
                                             {"name": "Activar Mantenimiento",       "url": "/maintenance-mode/on/",  "new_window": True},
                                             {"name": "Desactivar Mantenimiento",    "url": "/maintenance-mode/off/", "new_window": True},
+
+                                            # Link al reporte de bienes
+                                            {"name": "Reporte de Bienes", "url": "reporte_bienes_responsable", "new_window": True},
 
                                             # model admin to link to (Permissions checked against model)
                                             #{"model": "auth.User"},

@@ -1,1 +1,1 @@
-from . import asignaciones, devoluciones, bien
+from . import asignaciones, devoluciones, bien, personal

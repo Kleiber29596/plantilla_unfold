@@ -1,4 +1,3 @@
-from .catalogo_bienes import Estado, CondicionBien, Color, Marca, Modelo, TipoBien
-from .dependencia import Dependencia
-from .subdependencia import Subdependencia
-from .personal import Personal
+from apps.auxiliares.models.catalogo_bienes import Estado, CondicionBien, Color, Marca, Modelo, TipoBien
+from apps.auxiliares.models.dependencia     import Dependencia
+from apps.auxiliares.models.subdependencia  import Subdependencia
