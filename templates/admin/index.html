@@ -1,133 +1,402 @@
-{% extends "admin/base_site.html" %}
-{% load i18n static jazzmin %}
-{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+{% extends 'admin/base.html' %}
 
-{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% load i18n static %}
 
-{% block content_title %} {% trans 'Dashboard' %} {% endblock %}
-
-{% block breadcrumbs %}
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
-        <li class="breadcrumb-item">{% trans 'Dashboard' %}</li>
-    </ol>
+{% block title %}
+    {% if subtitle %}
+        {{ subtitle }} |
+    {% endif %}
+    Panel de Control - Sistema de Bienes
 {% endblock %}
 
+{% block branding %}
+    {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
 
 {% block content %}
-    {% get_side_menu using="app_list" as dashboard_list %}
-    {% if dashboard_list %}
-        {% widthratio dashboard_list|length 2 1 as middle %}
-    {% endif %}
-
-    <div class="col-12">
-        <div class="row">
-            <div class="col-md-6 col-sm-12">
-                {% for app in dashboard_list %}
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="m-0">{{ app.name }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-sm align-middle">
-                                <tbody>
-                                {% for model in app.models %}
-                                    <tr>
-                                        <td>
-                                            {% if model.url %}<a href="{{ model.url }}">{{ model.name }}</a>{% else %}{{ model.name }}{% endif %}
-                                        </td>
-                                        <td>
-                                            <div class="float-right">
-                                                {% if model.add_url %}
-                                                    <a href="{{ model.add_url }}" class="btn btn-success addlink">{% trans 'Add' %}</a>
-                                                {% endif %}
-                                                {% if model.url %}
-                                                    {% if model.view_only %}
-                                                        <a href="{{ model.url }}" class="btn {{ jazzmin_ui.button_classes.info }} viewlink">{% trans 'View' %}</a>
-                                                    {% else %}
-                                                        <a href="{{ model.url }}" class="btn btn-primary changelink">{% if model.custom %}{% trans 'Go' %}{% else %}{% trans 'Change' %}{% endif %}</a>
-                                                    {% endif %}
-                                                {% endif %}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {% if forloop.counter == middle|add:"0" %}
-                    </div>
-                    <div class="col-md-6 col-sm-12">
-                    {% endif %}
-
-                {% endfor %}
+    <div class="dashboard">
+        <!-- Encabezado estilo Unfold -->
+    <div class="flex flex-col gap-1 mb-8">
+        <div class="flex justify-between items-start">
+            <div>
+                <div class="font-semibold text-2xl text-font-important-light tracking-tight dark:text-font-important-dark">
+                    📊 Panel de Control - Sistema de Bienes
                 </div>
+                <p class="leading-relaxed mb-0 text-sm text-font-subtle-light dark:text-font-subtle-dark mt-1">
+                    Estadísticas e indicadores del sistema de asignación de bienes
+                </p>
+            </div>
+            
+            <!-- Botón de reporte estilizado -->
+            <a href="{% url 'reporte_bienes_responsable' %}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Generar Reporte
+            </a>
+        </div>
+    </div>
+        <div class="bg-base-200 dark:bg-base-800 dark:border-base-800 h-px my-6"></div>
+
+        <!-- Indicadores Principales -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total de Bienes -->
+            <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200">
+                <div class="grow relative">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-row gap-3 items-center -mt-2">
+                            <div class="rounded-default w-1 self-stretch bg-blue-600"></div>
+                            <div class="flex flex-col py-0.5">
+                                <h3 class="font-semibold tracking-tight text-lg text-important dark:text-font-important-dark">
+                                    {{ total_bienes|default:"0" }}
+                                </h3>
+                                <p class="text-subtle dark:text-font-subtle-dark">
+                                    Total de Bienes
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col border-t -mb-6 -mx-6 px-6 dark:border-base-800">
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Activos</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ bienes_activos|default:"0" }}</div>
+                            </div>
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Inactivos</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ bienes_inactivos|default:"0" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bienes Asignados -->
+            <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200">
+                <div class="grow relative">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-row gap-3 items-center -mt-2">
+                            <div class="rounded-default w-1 self-stretch bg-green-600"></div>
+                            <div class="flex flex-col py-0.5">
+                                <h3 class="font-semibold tracking-tight text-lg text-important dark:text-font-important-dark">
+                                    {{ bienes_asignados|default:"0" }}
+                                </h3>
+                                <p class="text-subtle dark:text-font-subtle-dark">
+                                    Bienes Asignados
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col border-t -mb-6 -mx-6 px-6 dark:border-base-800">
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Porcentaje</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ porcentaje_asignados|default:"0" }}%</div>
+                            </div>
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Sin asignar</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ bienes_sin_asignar|default:"0" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Activo -->
+            <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200">
+                <div class="grow relative">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-row gap-3 items-center -mt-2">
+                            <div class="rounded-default w-1 self-stretch bg-purple-600"></div>
+                            <div class="flex flex-col py-0.5">
+                                <h3 class="font-semibold tracking-tight text-lg text-important dark:text-font-important-dark">
+                                    {{ personal_activo|default:"0" }}
+                                </h3>
+                                <p class="text-subtle dark:text-font-subtle-dark">
+                                    Personal Activo
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col border-t -mb-6 -mx-6 px-6 dark:border-base-800">
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Con asignación</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ personal_con_asignacion|default:"0" }}</div>
+                            </div>
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Sin asignación</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ personal_sin_asignacion|default:"0" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asignaciones Recientes -->
+            <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200">
+                <div class="grow relative">
+                    <div class="flex flex-col gap-4">
+                        <div class="flex flex-row gap-3 items-center -mt-2">
+                            <div class="rounded-default w-1 self-stretch bg-orange-600"></div>
+                            <div class="flex flex-col py-0.5">
+                                <h3 class="font-semibold tracking-tight text-lg text-important dark:text-font-important-dark">
+                                    {{ asignaciones_mes|default:"0" }}
+                                </h3>
+                                <p class="text-subtle dark:text-font-subtle-dark">
+                                    Asign. del Mes
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col border-t -mb-6 -mx-6 px-6 dark:border-base-800">
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Hoy</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ asignaciones_hoy|default:"0" }}</div>
+                            </div>
+                            <div class="border-b border-base-200 flex flex-row gap-2 items-center place-content-between -mx-6 px-6 py-2 dark:border-base-800 last:border-b-0">
+                                <div class="text-subtle dark:text-font-subtle-dark">Semana</div>
+                                <div class="font-semibold ml-auto text-important dark:text-font-important-dark">{{ asignaciones_semana|default:"0" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </div>
-    <div class="col-lg-3 col-12 d-none">
-        <div id="content-related">
-            <div class="module" id="recent-actions-module">
-                <h4 class="mb-3">{% trans 'Recent actions' %}</h4>
-                {% load log %}
-                {% get_admin_log 6 as admin_log for_user user %}
-                {% if not admin_log %}
-                    <p>{% trans 'None available' %}</p>
-                {% else %}
-                    <div class="timeline">
-                        {% for entry in admin_log %}
-                            <div>
-                                {% if entry.is_change %}
-                                    <i class="fas fa-edit bg-gray text-xs"></i>
-                                {% elif entry.is_deletion %}
-                                    <i class="fas fa-trash bg-danger text-xs"></i>
-                                {% elif entry.is_addition %}
-                                    <i class="fas fa-plus-circle bg-success text-xs"></i>
-                                {% endif %}
-
-                                <div class="timeline-item">
-                                    <span class="time"><i class="fas fa-clock"></i> {% blocktrans with timesince=entry.action_time|timesince %}{{ timesince }} ago{% endblocktrans %}</span>
-                                    <h3 class="timeline-header no-border">
-                                        {% if entry.is_deletion or not entry.get_admin_url %}
-                                            {{ entry.object_repr }}
-                                        {% else %}
-                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
-                                        {% endif %}
-
-                                        {% if entry.model %}
-                                            <span class="mini quiet">
-                                                {% filter capfirst %}
-                                                    {{ entry.model }}
-                                                {% endfilter %}
-                                            </span>
-                                        {% endif %}
-                                    </h3>
-                                    {% if not entry.is_deletion %}
-                                        <div class="timeline-body">
-                                            {% if entry.is_addition %}
-                                                {{ entry }}
-                                            {% else %}
-                                                <ul style="list-style: none; padding: 0;">
-                                                    {% action_message_to_list entry as action_message_list %}
-                                                    {% for action_message in action_message_list %}
-                                                        <li>{{ action_message.msg|style_bold_first_word }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                        <div>
-                            <i class="fa fa-clock bg-gray"></i>
+        <!-- Gráficos -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-8">
+            <!-- Distribución por Tipo de Bien -->
+            <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200">
+                <div class="border-b border-base-200 flex flex-row items-center mb-6 -mt-6 -mx-6 py-4 px-6 dark:border-base-800">
+                    <h2 class="font-semibold text-[15px] text-important dark:text-font-important-dark">
+                        📋 Distribución por Tipo de Bien
+                    </h2>
+                </div>
+                <div class="grow relative">
+                    <div class="flex flex-col mb-6">
+                        <h3 class="font-semibold text-sm text-important dark:text-font-important-dark">
+                            Tipos de bienes registrados
+                        </h3>
+                        <p class="text-subtle dark:text-font-subtle-dark">
+                            Clasificación por categorías
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <div class="relative w-full">
+                            <canvas id="tipoBienChart"></canvas>
                         </div>
                     </div>
-                {% endif %}
+                    <div class="border-t border-base-200 flex flex-col mt-6 -mx-6 pt-6 px-6 dark:border-base-800">
+                        <h4 class="font-semibold text-sm text-important dark:text-font-important-dark">
+                            Total: {{ total_bienes|default:"0" }} bienes
+                        </h4>
+                        <p class="text-subtle dark:text-font-subtle-dark">
+                            Distribución actual del inventario
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asignaciones por Mes -->
+            <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200">
+                <div class="border-b border-base-200 flex flex-row items-center mb-6 -mt-6 -mx-6 py-4 px-6 dark:border-base-800">
+                    <h2 class="font-semibold text-[15px] text-important dark:text-font-important-dark">
+                        📈 Asignaciones por Mes
+                    </h2>
+                </div>
+                <div class="grow relative">
+                    <div class="flex flex-col mb-6">
+                        <h3 class="font-semibold text-sm text-important dark:text-font-important-dark">
+                            Últimos 6 meses
+                        </h3>
+                        <p class="text-subtle dark:text-font-subtle-dark">
+                            Tendencia de asignaciones
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <div class="relative w-full">
+                            <canvas id="asignacionesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="border-t border-base-200 flex flex-col mt-6 -mx-6 pt-6 px-6 dark:border-base-800">
+                        <h4 class="font-semibold text-sm text-important dark:text-font-important-dark">
+                            Total: {{ total_asignaciones|default:"0" }} asignaciones
+                        </h4>
+                        <p class="text-subtle dark:text-font-subtle-dark">
+                            Actividad del sistema
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de Bienes -->
+        <div class="bg-white block flex flex-col grow overflow-hidden p-6 relative rounded-default shadow-xs dark:bg-base-900 dark:border-base-800 border border-base-200 mb-8">
+            <div class="border-b border-base-200 flex flex-row items-center mb-6 -mt-6 -mx-6 py-4 px-6 dark:border-base-800">
+                <h2 class="font-semibold text-[15px] text-important dark:text-font-important-dark">
+                    ⚙️ Estado de Bienes
+                </h2>
+                <strong class="bg-base-100 font-medium text-font-important-light ml-auto px-1.5 py-1 rounded-default text-xs dark:text-font-important-dark dark:bg-base-800">
+                    {{ porcentaje_activos|default:"0" }}%
+                </strong>
+            </div>
+            <div class="grow relative">
+                <div class="flex flex-col gap-2 relative w-full">
+                    <div class="flex flex-row relative z-20">
+                        <h3 class="text-font-important-light dark:text-font-important-dark text-sm">
+                            Porcentaje de bienes operativos
+                        </h3>
+                    </div>
+                    <div class="bg-base-100 flex flex-row overflow-hidden rounded-default dark:bg-base-800">
+                        <div class="h-1.5 bg-green-600 z-10 dark:bg-green-500 last:rounded-r-default h-2" 
+                             title="Bienes activos: {{ porcentaje_activos|default:'0' }}%" 
+                             style="width: {{ porcentaje_activos|default:'0' }}%">
+                        </div>
+                        <div class="h-1.5 bg-yellow-600 z-10 dark:bg-yellow-500 last:rounded-r-default h-2" 
+                             title="Bienes en mantenimiento: {{ porcentaje_mantenimiento|default:'0' }}%" 
+                             style="width: {{ porcentaje_mantenimiento|default:'0' }}%">
+                        </div>
+                        <div class="h-1.5 bg-red-600 z-10 dark:bg-red-500 last:rounded-r-default h-2" 
+                             title="Bienes inactivos: {{ porcentaje_inactivos|default:'0' }}%" 
+                             style="width: {{ porcentaje_inactivos|default:'0' }}%">
+                        </div>
+                    </div>
+                </div>
+                <div class="border-t border-base-200 flex flex-col mt-6 -mx-6 pt-6 px-6 dark:border-base-800">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-green-600"></div>
+                                <span class="font-semibold text-important dark:text-font-important-dark">Activos</span>
+                                <span class="ml-auto">{{ bienes_activos|default:"0" }} ({{ porcentaje_activos|default:"0" }}%)</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-yellow-600"></div>
+                                <span class="font-semibold text-important dark:text-font-important-dark">Mantenimiento</span>
+                                <span class="ml-auto">{{ bienes_mantenimiento|default:"0" }} ({{ porcentaje_mantenimiento|default:"0" }}%)</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-red-600"></div>
+                                <span class="font-semibold text-important dark:text-font-important-dark">Inactivos</span>
+                                <span class="ml-auto">{{ bienes_inactivos|default:"0" }} ({{ porcentaje_inactivos|default:"0" }}%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Script para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar modo oscuro
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            
+            // Colores para dark/light mode
+            const colors = {
+                light: {
+                    text: '#111827',
+                    grid: 'rgba(0, 0, 0, 0.05)',
+                    bg: 'transparent'
+                },
+                dark: {
+                    text: '#f9fafb',
+                    grid: 'rgba(255, 255, 255, 0.1)',
+                    bg: 'transparent'
+                }
+            };
+            
+            const currentColors = isDarkMode ? colors.dark : colors.light;
+
+            // Gráfico 1: Distribución por Tipo de Bien
+            const tipoBienCtx = document.getElementById('tipoBienChart').getContext('2d');
+            new Chart(tipoBienCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: {{ tipos_bien_labels|safe }},
+                    datasets: [{
+                        data: {{ tipos_bien_data|safe }},
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',   // Azul
+                            'rgba(34, 197, 94, 0.8)',    // Verde
+                            'rgba(168, 85, 247, 0.8)',   // Violeta
+                            'rgba(245, 158, 11, 0.8)',   // Amarillo
+                            'rgba(239, 68, 68, 0.8)',    // Rojo
+                            'rgba(236, 72, 153, 0.8)'    // Rosa
+                        ],
+                        borderColor: isDarkMode ? '#374151' : '#ffffff',
+                        borderWidth: 2,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: currentColors.text,
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+
+            // Gráfico 2: Asignaciones por Mes
+            const asignacionesCtx = document.getElementById('asignacionesChart').getContext('2d');
+            new Chart(asignacionesCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ meses_labels|safe }},
+                    datasets: [{
+                        label: 'Asignaciones',
+                        data: {{ meses_data|safe }},
+                        backgroundColor: isDarkMode ? 
+                            'rgba(59, 130, 246, 0.6)' : 
+                            'rgba(59, 130, 246, 0.8)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        hoverBackgroundColor: 'rgba(59, 130, 246, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: currentColors.grid
+                            },
+                            ticks: {
+                                color: currentColors.text,
+                                stepSize: 1
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: currentColors.text
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

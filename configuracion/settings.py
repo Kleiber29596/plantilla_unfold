@@ -16,7 +16,15 @@ ALLOWED_HOSTS       = config('ALLOWED_HOSTS', cast=Csv())
 
 
 BASE_APPS   =   [              
-                    'jazzmin',
+                    "unfold",  # before django.contrib.admin
+                    "unfold.contrib.filters",  # optional, if special filters are needed
+                    "unfold.contrib.forms",  # optional, if special form elements are needed
+                    "unfold.contrib.inlines",  # optional, if special inlines are needed
+                    "unfold.contrib.import_export",  # optional, if django-import-export package is used
+                    "unfold.contrib.guardian",  # optional, if django-guardian package is used
+                    "unfold.contrib.simple_history",  # optional, if django-simple-history package is used
+                    "unfold.contrib.location_field",  # optional, if django-location-field package is used
+                    "unfold.contrib.constance",  # optional, if django-constance package is used
                     'dal',
                     'dal_select2',
                     'django.contrib.admin',
@@ -246,158 +254,357 @@ NINJA_JWT                       =   {
                                     }
 
 
-JAZZMIN_SETTINGS = {
-                        # title of the window (Will default to current_admin_site.site_title if absent or None)
-                        "site_title": "Admin",
+# JAZZMIN_SETTINGS = {
+#                         # title of the window (Will default to current_admin_site.site_title if absent or None)
+#                         "site_title": "Admin",
 
-                        # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-                        "site_header": "SIA-OTIC",
+#                         # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+#                         "site_header": "SIA-OTIC",
 
-                        # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-                        "site_brand": "SIA-OTIC",
+#                         # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
+#                         "site_brand": "SIA-OTIC",
 
-                        # Logo to use for your site, must be present in static files, used for brand on top left
-                        "site_logo": "img/logomppe.png",
-                        "login_logo": "img/logomppe.png",
+#                         # Logo to use for your site, must be present in static files, used for brand on top left
+#                         "site_logo": "img/logomppe.png",
+#                         "login_logo": "img/logomppe.png",
 
-                        # CSS classes that are applied to the logo above
-                        "site_logo_classes": "img-circle",
+#                         # CSS classes that are applied to the logo above
+#                         "site_logo_classes": "img-circle",
 
-                        # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
-                        "site_icon": None,
+#                         # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
+#                         "site_icon": None,
 
-                        # Welcome text on the login screen
-                        "welcome_sign": "Bienvenido al Sistema de Gestion de Inventario",
+#                         # Welcome text on the login screen
+#                         "welcome_sign": "Bienvenido al Sistema de Gestion de Inventario",
 
-                        # Copyright on the footer
-                        "copyright": "Oficina de Tecnologías de la Información y la Comunicación (OTIC) Ministerio del Poder Popular para la Educación R.I.F.: G-20000009-0",
+#                         # Copyright on the footer
+#                         "copyright": "Oficina de Tecnologías de la Información y la Comunicación (OTIC) Ministerio del Poder Popular para la Educación R.I.F.: G-20000009-0",
 
-                        # The model admin to search from the search bar, search bar omitted if excluded
-                        #"search_model": "auth.User",
+#                         # The model admin to search from the search bar, search bar omitted if excluded
+#                         #"search_model": "auth.User",
 
-                        # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
-                        "user_avatar": None,
+#                         # Field name on user model that contains avatar ImageField/URLField/Charfield or a callable that receives the user
+#                         "user_avatar": None,
 
-                        ############
-                        # Top Menu #
-                        ############
+#                         ############
+#                         # Top Menu #
+#                         ############
 
-                        # Links to put along the top menu
-                        "topmenu_links": [
-                                            # Url that gets reversed (Permissions can be added)
-                                            {"name": "Inicio",  "url": "admin:index", "permissions": ["auth.view_user"]},
-                                            # external url that opens in a new window (Permissions can be added)
+#                         # Links to put along the top menu
+#                         "topmenu_links": [
+#                                             # Url that gets reversed (Permissions can be added)
+#                                             {"name": "Inicio",  "url": "admin:index", "permissions": ["auth.view_user"]},
+#                                             # external url that opens in a new window (Permissions can be added)
 
-                                            {"name": "Activar Mantenimiento",       "url": "/maintenance-mode/on/",  "new_window": True},
-                                            {"name": "Desactivar Mantenimiento",    "url": "/maintenance-mode/off/", "new_window": True},
+#                                             {"name": "Activar Mantenimiento",       "url": "/maintenance-mode/on/",  "new_window": True},
+#                                             {"name": "Desactivar Mantenimiento",    "url": "/maintenance-mode/off/", "new_window": True},
 
-                                            # Link al reporte de bienes
-                                            {"name": "Reporte de Bienes", "url": "reporte_bienes_responsable", "new_window": True},
+#                                             # Link al reporte de bienes
+#                                             {"name": "Reporte de Bienes", "url": "reporte_bienes_responsable", "new_window": True},
 
-                                            # model admin to link to (Permissions checked against model)
-                                            #{"model": "auth.User"},
+#                                             # model admin to link to (Permissions checked against model)
+#                                             #{"model": "auth.User"},
 
-                                            # App with dropdown menu to all its models pages (Permissions checked against models)
-                                            #{"app": "apps.nomina"},
-                                        ],
+#                                             # App with dropdown menu to all its models pages (Permissions checked against models)
+#                                             #{"app": "apps.nomina"},
+#                                         ],
 
-                        #############
-                        # User Menu #
-                        #############
+#                         #############
+#                         # User Menu #
+#                         #############
 
-                        # Additional links to include in the user menu on the top right ("app" url type is not allowed)
-                        "usermenu_links":   [
-                                                #{"name": "Desactivar mantenimiento",    "url": "/maintenance-mode/off/", "new_window": True},
-                                                #{"name": "Activar Mantenimiento",       "url": "/maintenance-mode/non/", "new_window": True},
-                                                {"model": "auth.user"}
-                                            ],
+#                         # Additional links to include in the user menu on the top right ("app" url type is not allowed)
+#                         "usermenu_links":   [
+#                                                 #{"name": "Desactivar mantenimiento",    "url": "/maintenance-mode/off/", "new_window": True},
+#                                                 #{"name": "Activar Mantenimiento",       "url": "/maintenance-mode/non/", "new_window": True},
+#                                                 {"model": "auth.user"}
+#                                             ],
 
-                        #############
-                        # Side Menu #
-                        #############
+#                         #############
+#                         # Side Menu #
+#                         #############
 
-                        # Whether to display the side menu
-                        "show_sidebar": True,
+#                         # Whether to display the side menu
+#                         "show_sidebar": True,
 
-                        # Whether to aut expand the menu
-                        "navigation_expanded": True,
+#                         # Whether to aut expand the menu
+#                         "navigation_expanded": True,
 
-                        # Hide these apps when generating side menu e.g (auth)
-                        "hide_apps":    [
-                                            #'token_blacklist',
-                                            #'auth'
-                                            'token_blacklist'
-                                        ],
+#                         # Hide these apps when generating side menu e.g (auth)
+#                         "hide_apps":    [
+#                                             #'token_blacklist',
+#                                             #'auth'
+#                                             'token_blacklist'
+#                                         ],
 
-                        # Hide these models when generating side menu (e.g auth.user)
-                        "hide_models":  [
-                                            'django_rest_passwordreset.resetpasswordtoken',
+#                         # Hide these models when generating side menu (e.g auth.user)
+#                         "hide_models":  [
+#                                             'django_rest_passwordreset.resetpasswordtoken',
                     
                                 
-                                        ],
+#                                         ],
 
-                        # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
-                        "order_with_respect_to":    [
+#                         # List of apps (and/or models) to base side menu ordering off of (does not need to contain all apps/models)
+#                         "order_with_respect_to":    [
                                                       
-                                                        # 'visitas',
-                                                        # 'users',
+#                                                         # 'visitas',
+#                                                         # 'users',
                                                         
-                                                        'cuenta',
-                                                        'auth',
-                                                        'bien',
-                                                        'auxiliares',                                                          
+#                                                         'cuenta',
+#                                                         'auth',
+#                                                         'bien',
+#                                                         'auxiliares',                                                          
                                                        
-                                                    ],
+#                                                     ],
 
-                        # Custom links to append to app groups, keyed on app name
-                        "custom_links": {    
-                                            #"historico":    [{"name": "Nombre del Link", "url": "ruta", "icon": "fas fa-comments", "permissions": ["app.permiso"]}]
-                                            "gestion": [
-                                            {"name": "Responsables", "url": "/admin/auxiliares/responsable/", "icon": "fas fa-users"},
+#                         # Custom links to append to app groups, keyed on app name
+#                         "custom_links": {    
+#                                             #"historico":    [{"name": "Nombre del Link", "url": "ruta", "icon": "fas fa-comments", "permissions": ["app.permiso"]}]
+#                                             "gestion": [
+#                                             {"name": "Responsables", "url": "/admin/auxiliares/responsable/", "icon": "fas fa-users"},
                                           
-                                             ],       
-                                        },
+#                                              ],       
+#                                         },
 
-                        # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
-                        # for the full list of 5.13.0 free icon classes
+#                         # Custom icons for side menu apps/models See https://fontawesome.com/icons?d=gallery&m=free&v=5.0.0,5.0.1,5.0.10,5.0.11,5.0.12,5.0.13,5.0.2,5.0.3,5.0.4,5.0.5,5.0.6,5.0.7,5.0.8,5.0.9,5.1.0,5.1.1,5.2.0,5.3.0,5.3.1,5.4.0,5.4.1,5.4.2,5.13.0,5.12.0,5.11.2,5.11.1,5.10.0,5.9.0,5.8.2,5.8.1,5.7.2,5.7.1,5.7.0,5.6.3,5.5.0,5.4.2
+#                         # for the full list of 5.13.0 free icon classes
                         
-                        "icons":    {
-                                        "auth":                     "fas fa-users-cog",
-                                        "cuenta.user":              "fa-solid fa-users",
-                                        "auth.group":               "fa-solid fa-users-viewfinder",
-                                        "gestion.inventario":       "fa-solid fa-pallet"
-                                    },
-                        # Icons that are used when one is not manually specified
-                        "default_icon_parents":     "fas fa-chevron-circle-right",
-                        "default_icon_children":    "fas fa-circle",
+#                         "icons":    {
+#                                         "auth":                     "fas fa-users-cog",
+#                                         "cuenta.user":              "fa-solid fa-users",
+#                                         "auth.group":               "fa-solid fa-users-viewfinder",
+#                                         "gestion.inventario":       "fa-solid fa-pallet"
+#                                     },
+#                         # Icons that are used when one is not manually specified
+#                         "default_icon_parents":     "fas fa-chevron-circle-right",
+#                         "default_icon_children":    "fas fa-circle",
 
-                        #################
-                        # Related Modal #
-                        #################
-                        # Use modals instead of popups
-                        "related_modal_active": False,
+#                         #################
+#                         # Related Modal #
+#                         #################
+#                         # Use modals instead of popups
+#                         "related_modal_active": False,
 
-                        #############
-                        # UI Tweaks #
-                        #############
-                        # Relative paths to custom CSS/JS scripts (must be present in static files)
-                        "custom_css": None,
-                        "custom_js": None,
-                        # Whether to show the UI customizer on the sidebar
-                        "show_ui_builder": False,
+#                         #############
+#                         # UI Tweaks #
+#                         #############
+#                         # Relative paths to custom CSS/JS scripts (must be present in static files)
+#                         "custom_css": None,
+#                         "custom_js": None,
+#                         # Whether to show the UI customizer on the sidebar
+#                         "show_ui_builder": False,
 
-                        ###############
-                        # Change view #
-                        ###############
-                        # Render out the change view as a single form, or in tabs, current options are
-                        # - single
-                        # - horizontal_tabs (default)
-                        # - vertical_tabs
-                        # - collapsible
-                        # - carousel
-                        "changeform_format": "horizontal_tabs",
-                        # override change forms on a per modeladmin basis
-                        "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
-                        # Add a language dropdown into the admin
-                        "language_chooser": False,
-                    }
+#                         ###############
+#                         # Change view #
+#                         ###############
+#                         # Render out the change view as a single form, or in tabs, current options are
+#                         # - single
+#                         # - horizontal_tabs (default)
+#                         # - vertical_tabs
+#                         # - collapsible
+#                         # - carousel
+#                         "changeform_format": "horizontal_tabs",
+#                         # override change forms on a per modeladmin basis
+#                         "changeform_format_overrides": {"auth.user": "collapsible", "auth.group": "vertical_tabs"},
+#                         # Add a language dropdown into the admin
+#                         "language_chooser": False,
+#                     }
+
+
+# settings.py
+
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+from apps.bien.views.dashboard import dashboard_callback
+UNFOLD = {
+    "SITE_TITLE": "Sistema de gestion de inventario",
+    "SITE_HEADER": "Administración SGAB",
+    "SITE_SUBHEADER": "Panel de administración",
+    'WIZARD_CONFIRMATION': True,  # Mostrar confirmación al final del wizard
+    'WIZARD_DEFAULT_STEP': 1,  # Paso inicial del wizard
+
+    # Dashboard callback
+    "DASHBOARD_CALLBACK":dashboard_callback,
+
+    "SITE_ICON": {
+        "light": lambda request: static("img/logomppe.png"),
+        "dark": lambda request: static("img/logomppe.png"),
+    },
+    "SITE_LOGO": {
+        "light": lambda request: static("img/logomppe.png"),
+        "dark": lambda request: static("img/logomppe.png"),
+    },
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "sizes": "32x32",
+            "type": "image/svg+xml",
+            "href": lambda request: static("img/logomppe.png"),
+        },
+    ],
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "STYLES": [
+                lambda request: static("css/dashboard.css"),  # Tu archivo CSS personalizado
+
+    ],
+    "SCRIPTS": [
+        lambda request: static("js/script.js"),
+    ],
+
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,  # O False si quieres control manual
+        
+        "navigation": [
+
+            {
+                "title": "Autenticación y Usuarios",
+                "icon": "person",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                     {
+                        "title": "Usuarios",
+                        "icon": "person",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:cuenta_user_changelist"),
+                    },
+                    {
+                        "title": "Grupos",
+                        "icon": "groups",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auth_group_changelist"),
+                    },
+
+                   
+                ],
+            },
+            {
+                "title": "Inventario",
+                "icon": "arrow_right",
+                "separator": True,
+                "collapsible": True,
+                "items": [
+                     {
+                        "title": "Bienes",
+                        "icon": "inventory",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:bien_bien_changelist"),
+                    },
+                    
+                    {
+                        "title": "Asignaciones",
+                        "icon": "assignment",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:bien_asignacion_changelist"),
+                    },
+
+                   
+                    {
+                        "title": "Devoluciones",
+                        "icon": "assignment_return",
+                        "link": reverse_lazy("admin:bien_devolucion_changelist"),
+                    },
+                    {
+                        "title": "Personal",
+                        "icon": "person",
+                        "link": reverse_lazy("admin:bien_personal_changelist"),
+                    },
+
+                   
+                ],
+            },
+            {
+                "title": "Auxiliares",
+                "icon": "arrow_right",
+                "separator": True,
+                "collapsible": True,
+                "items": [ 
+                     {
+                        "title": "Marcas",
+                        "icon": "business",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_marca_changelist"),
+                    },
+                     {
+                        "title": "Modelos",
+                        "icon": "business",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_modelo_changelist"),
+                    },  
+                     {
+                        "title": "Tipos",
+                        "icon": "business",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_marca_changelist"),
+                    },
+                    {
+                        "title": "Estados",
+                        "icon": "business",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_estado_changelist"),
+                    },
+                    {
+                        "title": "Condiciones",
+                        "icon": "business",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_condicionbien_changelist"),
+                    },
+                        
+                    {
+                        "title": "Dependencias",
+                        "icon": "apartment",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_dependencia_changelist"),
+                    },
+                    {
+                        "title": "Subdependencias",
+                        "icon": "business",
+                        # CORRECTO: admin:cuenta_user_changelist
+                        "link": reverse_lazy("admin:auxiliares_subdependencia_changelist"),
+                    },
+                    
+                   
+                ],
+
+            }
+
+
+
+        ],
+    },
+    # Colores personalizados para modo claro y oscuro
+    "COLORS": {
+        "primary": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+        "gray": {
+            "50": "249 250 251",
+            "100": "243 244 246",
+            "200": "229 231 235",
+            "300": "209 213 219",
+            "400": "156 163 175",
+            "500": "107 114 128",
+            "600": "75 85 99",
+            "700": "55 65 81",
+            "800": "31 41 55",
+            "900": "17 24 39",
+            "950": "3 7 18",
+        },
+    },
+
+
+    
+}
