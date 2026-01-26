@@ -7,14 +7,14 @@ from apps.auxiliares.models.catalogo_bienes import Modelo
 from apps.auxiliares.models.catalogo_bienes import TipoBien
 
 class Bien(models.Model):
-    codigo_bien         = models.CharField(max_length=50)
+    codigo_bien         = models.CharField(max_length=50, unique=True)
     tipo_bien           = models.ForeignKey(TipoBien, on_delete=models.PROTECT, null=True, blank=True)
-    serial              = models.CharField(max_length=100)
+    serial              = models.CharField(max_length=100, null=True, blank=True)
     color               = models.ForeignKey(Color, on_delete=models.PROTECT)
     marca               = models.ForeignKey(Marca, on_delete=models.PROTECT, null=True, blank=True)
     modelo              = models.ForeignKey(Modelo, on_delete=models.PROTECT, null=True, blank=True)
     condicion           = models.ForeignKey(CondicionBien, on_delete=models.PROTECT)
-    estado              = models.ForeignKey(Estado, on_delete=models.PROTECT)
+    estado              = models.ForeignKey(Estado, on_delete=models.PROTECT, default=3)
     valor_unitario      = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     fecha_adquisicion   = models.DateField(null=True, blank=True)
 
@@ -25,4 +25,4 @@ class Bien(models.Model):
 
 
     def __str__(self):
-        return self.codigo_bien
+        return  f'Codigo de bien: {self.codigo_bien} Descripción: {self.tipo_bien}, {self.modelo or "Sin modelo"} {self.marca or "Sin marca"}'

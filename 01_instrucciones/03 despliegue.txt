@@ -12,6 +12,9 @@ source .venv/bin/activate
 ## INSTALAR REQUEREMENTS
 pip install -r requirements.txt
 
+## INSTALAR REQUERIMENTS en caso de errores
+foreach($line in Get-Content .\requirements.txt) { pip install $line }
+
 ## INSTALACION DE .SERVICE Y .SOCKET
 sudo cp censoestudiantil.service censoestudiantil.socket /etc/systemd/system
 

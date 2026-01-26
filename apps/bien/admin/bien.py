@@ -2,6 +2,7 @@ from django.contrib import admin
 from apps.bien.models.bien import Bien
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin
+from apps.auxiliares.models.catalogo_bienes import Estado
 
 
 @admin.register(Bien)
@@ -10,6 +11,13 @@ class BienAdmin(ModelAdmin):
     search_fields = ('codigo_bien', 'serial')
     list_filter = ('tipo_bien', 'marca', 'modelo', 'estado', 'condicion')
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Filtramos estatus solo en el inline si es necesario
+        if db_field.name == "estado":
+            # Si quieres también filtrar en el inline
+            kwargs["queryset"] = Estado.objects.filter(tipo='Bien')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    
     def estatus_badge_outline(self, obj):
         # Badges con borde y texto coloreado
         status_colors = {
@@ -49,6 +57,8 @@ class BienAdmin(ModelAdmin):
         )
     
     estatus_badge_outline.short_description = 'Estatus'
+
+
 
     def condicion_badge_outline(self, obj):
         # Badges con borde y texto coloreado
