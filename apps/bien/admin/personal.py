@@ -4,6 +4,11 @@ from unfold.admin import ModelAdmin
 
 @admin.register(Personal)
 class PersonalAdmin(ModelAdmin):
-    list_display = ('nombres_apellidos', 'cedula', 'cargo', 'departamento', 'activo')
+    list_display = ('nombres_apellidos', 'nro_de_documento', 'cargo', 'departamento', 'subdependencia', 'activo')
     search_fields = ('nombres_apellidos', 'cedula')
-    list_filter = ('activo', 'departamento')
+    list_filter = ('activo', 'departamento','subdependencia__nombre')
+    
+    def nro_de_documento(self, obj):
+        return f'{obj.origen}-{obj.cedula}'
+
+

@@ -39,7 +39,7 @@ class Color(models.Model):
 
 
     def __str__(self):
-        return self.nombre
+        return self.nombre 
 
 class Marca(models.Model):
     nombre = models.CharField(max_length=100)
@@ -48,7 +48,9 @@ class Marca(models.Model):
         db_table = 'catalogo_bienes"."marca'
 
     def __str__(self):
-        return self.nombre
+        return self.nombre or 'Sin marca'
+
+
 
 class Modelo(models.Model):
     nombre = models.CharField(max_length=100)
@@ -58,7 +60,8 @@ class Modelo(models.Model):
         db_table = 'catalogo_bienes"."modelo'
 
     def __str__(self):
-        return self.nombre
+        return self.nombre if self.nombre else 'Sin modelo'
+
 
 
 
@@ -71,4 +74,4 @@ class TipoBien(models.Model):
         verbose_name_plural = 'Tipos de Bienes'
 
     def __str__(self):
-        return self.nombre
+        return self.nombre if  self.nombre else 'Sin tipo'

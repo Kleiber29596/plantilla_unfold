@@ -3,26 +3,29 @@ from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 from django.http import HttpResponse
 from apps.bien.models.detalle_asignacion import DetalleAsignacion
+from apps.auxiliares.models.dependencia import Dependencia
 from itertools import groupby
 from datetime import datetime
 import re
+import logging
 
-# --- Funciones de Estilo Mejoradas basadas en el reporte anterior ---
+# Configurar logging para debug
+logger = logging.getLogger(__name__)
+
+# --- Funciones de Estilo CORREGIDAS ---
 
 def get_estilos():
     """Retorna un diccionario con todos los estilos visuales mejorados"""
     
-    # Paleta de colores profesional - Igual que en el reporte anterior
-    COLOR_PRIMARIO = "B7B7B7"  # Gris para todos los títulos
-    COLOR_SECUNDARIO = "B7B7B7"  # Gris para encabezados de sección
-    COLOR_FONDO_CLARO = "F8FAFC"  # Azul muy claro para filas alternas
+    COLOR_PRIMARIO = "B7B7B7"
+    COLOR_SECUNDARIO = "B7B7B7"
+    COLOR_FONDO_CLARO = "F8FAFC"
     COLOR_TEXTO_BLANCO = "FFFFFF"
     COLOR_TEXTO_OSCURO = "1F2937"
-    COLOR_BORDE = "CBD5E1"  # Gris claro para bordes
-    COLOR_ENCABEZADO = "B7B7B7"  # Gris para encabezados de tabla
-    COLOR_ENCABEZADO_SECCION = "D9D9D9"  # Gris más claro para secciones
+    COLOR_BORDE = "CBD5E1"
+    COLOR_ENCABEZADO = "B7B7B7"
+    COLOR_ENCABEZADO_SECCION = "D9D9D9"
     
-    # Bordes - Igual que en el reporte anterior
     borde_delgado = Border(
         left=Side(style='thin', color=COLOR_BORDE),
         right=Side(style='thin', color=COLOR_BORDE),
@@ -37,472 +40,500 @@ def get_estilos():
         bottom=Side(style='medium', color=COLOR_PRIMARIO)
     )
     
+    # Crear objetos PatternFill explícitamente
+    fill_primario = PatternFill(start_color=COLOR_PRIMARIO, end_color=COLOR_PRIMARIO, fill_type="solid")
+    fill_encabezado = PatternFill(start_color=COLOR_ENCABEZADO, end_color=COLOR_ENCABEZADO, fill_type="solid")
+    fill_fondo_claro = PatternFill(start_color=COLOR_FONDO_CLARO, end_color=COLOR_FONDO_CLARO, fill_type="solid")
+    fill_encabezado_seccion = PatternFill(start_color=COLOR_ENCABEZADO_SECCION, end_color=COLOR_ENCABEZADO_SECCION, fill_type="solid")
+    
     return {
-        # Título principal
         'titulo_principal': {
             'font': Font(name='Calibri', size=16, bold=True, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_PRIMARIO, end_color=COLOR_PRIMARIO, fill_type="solid"),
+            'fill': fill_primario,
             'alignment': Alignment(horizontal="center", vertical="center", wrap_text=True),
             'border': borde_grueso
         },
-        # Encabezados de sección
-        'titulo_seccion': {
-            'font': Font(name='Calibri', size=12, bold=True, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_SECUNDARIO, end_color=COLOR_SECUNDARIO, fill_type="solid"),
-            'alignment': Alignment(horizontal="center", vertical="center", wrap_text=True),
-            'border': borde_delgado
-        },
         'encabezado_tabla': {
             'font': Font(name='Calibri', size=11, bold=True, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_ENCABEZADO, end_color=COLOR_ENCABEZADO, fill_type="solid"),
+            'fill': fill_encabezado,
             'alignment': Alignment(horizontal="center", vertical="center", wrap_text=True),
             'border': borde_delgado
         },
-        # Datos normales
         'celda_datos': {
             'font': Font(name='Calibri', size=10, color=COLOR_TEXTO_OSCURO),
+            'fill': PatternFill(fill_type=None),  # Fill vacío explícito
             'alignment': Alignment(horizontal="center", vertical="center"),
             'border': borde_delgado
         },
-        # Filas alternas (para mejor legibilidad)
         'celda_datos_alterna': {
             'font': Font(name='Calibri', size=10, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_FONDO_CLARO, end_color=COLOR_FONDO_CLARO, fill_type="solid"),
+            'fill': fill_fondo_claro,
             'alignment': Alignment(horizontal="center", vertical="center"),
             'border': borde_delgado
         },
-        # Encabezado de sección (responsable)
-        'encabezado_responsable': {
-            'font': Font(name='Calibri', size=12, bold=True, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_ENCABEZADO_SECCION, end_color=COLOR_ENCABEZADO_SECCION, fill_type="solid"),
-            'alignment': Alignment(horizontal="left", vertical="center", wrap_text=True),
-            'border': borde_delgado
-        },
-        # Estilos para información general
         'etiqueta': {
             'font': Font(name='Calibri', size=11, bold=True, color=COLOR_TEXTO_OSCURO),
+            'fill': PatternFill(fill_type=None),
             'alignment': Alignment(horizontal="left", vertical="center"),
             'border': borde_delgado
         },
         'info_valor': {
             'font': Font(name='Calibri', size=11, color=COLOR_TEXTO_OSCURO),
+            'fill': PatternFill(fill_type=None),
             'alignment': Alignment(horizontal="left", vertical="center"),
             'border': borde_delgado
         },
-        'encabezado_seccion': {
-            'font': Font(name='Calibri', size=12, bold=True, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_ENCABEZADO_SECCION, end_color=COLOR_ENCABEZADO_SECCION, fill_type="solid"),
-            'alignment': Alignment(horizontal="center", vertical="center", wrap_text=True),
-            'border': borde_delgado
-        },
-        # Para datos alineados a la izquierda
         'dato_izquierda': {
             'font': Font(name='Calibri', size=10, color=COLOR_TEXTO_OSCURO),
+            'fill': PatternFill(fill_type=None),
             'alignment': Alignment(horizontal="left", vertical="center", wrap_text=True),
             'border': borde_delgado
         },
         'dato_izquierda_alterna': {
             'font': Font(name='Calibri', size=10, color=COLOR_TEXTO_OSCURO),
-            'fill': PatternFill(start_color=COLOR_FONDO_CLARO, end_color=COLOR_FONDO_CLARO, fill_type="solid"),
+            'fill': fill_fondo_claro,
             'alignment': Alignment(horizontal="left", vertical="center", wrap_text=True),
             'border': borde_delgado
         },
     }
 
 def aplicar_estilo_celda(celda, estilo):
-    """Aplica un estilo completo a una celda - igual que en el reporte anterior"""
-    if 'font' in estilo:
-        celda.font = estilo['font']
-    if 'fill' in estilo:
-        celda.fill = estilo['fill']
-    if 'alignment' in estilo:
-        celda.alignment = estilo['alignment']
-    if 'border' in estilo:
-        celda.border = estilo['border']
-
-def ajustar_ancho_columnas(hoja, anchos_personalizados=None):
-    """Ajusta el ancho de las columnas según el contenido - igual que en el reporte anterior"""
-    if anchos_personalizados:
-        for col, ancho in anchos_personalizados.items():
-            if isinstance(col, int):
-                col_letter = get_column_letter(col)
-            else:
-                col_letter = col
-            hoja.column_dimensions[col_letter].width = ancho
-    else:
-        for column in hoja.columns:
-            max_length = 0
-            column_letter = get_column_letter(column[0].column)
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            adjusted_width = min(max_length + 2, 50)
-            hoja.column_dimensions[column_letter].width = adjusted_width
-
-def ajustar_alto_fila(hoja, fila, altura):
-    """Ajusta la altura de una fila específica - igual que en el reporte anterior"""
-    hoja.row_dimensions[fila].height = altura
+    """Aplica un estilo completo a una celda de manera segura"""
+    if estilo:
+        if 'font' in estilo and estilo['font']:
+            celda.font = estilo['font']
+        if 'fill' in estilo and estilo['fill']:
+            celda.fill = estilo['fill']
+        if 'alignment' in estilo and estilo['alignment']:
+            celda.alignment = estilo['alignment']
+        if 'border' in estilo and estilo['border']:
+            celda.border = estilo['border']
 
 def sanitizar_nombre_hoja(nombre):
     """Limpia el nombre para que sea válido como nombre de hoja en Excel"""
-    # Reemplazar caracteres inválidos
+    if not nombre:
+        return "SinNombre"
+    
+    nombre = str(nombre)
     nombre = re.sub(r'[\\/*?:[\]]', '_', nombre)
-    # Limitar longitud a 31 caracteres (límite de Excel)
     if len(nombre) > 31:
         nombre = nombre[:28] + "..."
     return nombre
 
-# --- Vista Principal del Reporte con estilos mejorados ---
+# --- FUNCIÓN PRINCIPAL CORREGIDA ---
 
-def exportar_bienes_por_responsable_excel(request):
+def exportar_bienes_por_dependencia_excel(request, dependencia_id=None):
     """
-    Genera un reporte en Excel de bienes asignados, agrupados por 
-    Subdependencia y luego por Responsable, con una pestaña por cada subdependencia.
+    Genera un reporte en Excel de bienes asignados para una dependencia específica.
+    Una pestaña por cada subdependencia, con responsables como columna.
     """
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
     fecha_descarga = datetime.now().strftime("%Y%m%d_%H%M")
-    response['Content-Disposition'] = f'attachment; filename="reporte_bienes_responsables_{fecha_descarga}.xlsx"'
-
-    # OPCIÓN 1: Filtro simple usando el campo 'devuelto' que mencionaste anteriormente
+    response['Content-Disposition'] = f'attachment; filename="reporte_inventario_{fecha_descarga}.xlsx"'
+    
+    logger.info(f"Iniciando generación de reporte - dependencia_id: {dependencia_id}")
+    
+    # Obtener la dependencia
+    dependencia = None
+    if dependencia_id:
+        try:
+            dependencia = Dependencia.objects.get(id=dependencia_id)
+            logger.info(f"Dependencia encontrada por ID {dependencia_id}: {dependencia.nombre}")
+        except Dependencia.DoesNotExist:
+            logger.warning(f"Dependencia con ID {dependencia_id} no encontrada")
+            dependencia = Dependencia.objects.first()
+    else:
+        dependencia = Dependencia.objects.first()
+    
+    if not dependencia:
+        logger.error("No hay dependencias configuradas en el sistema")
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Sin Datos"
+        ws['A1'] = "ERROR: No hay dependencias configuradas en el sistema"
+        wb.save(response)
+        return response
+    
+    logger.info(f"Usando dependencia: {dependencia.nombre} (ID: {dependencia.id})")
+    
+    # Obtener todas las subdependencias de esta dependencia
+    subdependencias = dependencia.subdependencia_set.all().order_by('nombre')
+    logger.info(f"Subdependencias encontradas: {subdependencias.count()}")
+    
+    if not subdependencias.exists():
+        logger.warning(f"No hay subdependencias para {dependencia.nombre}")
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Sin Datos"
+        ws['A1'] = f"No hay subdependencias para {dependencia.nombre}"
+        wb.save(response)
+        return response
+    
+    # Obtener datos de bienes asignados
     try:
-        detalles_asignacion = DetalleAsignacion.objects.filter(
-            devuelto=False  # Solo bienes que no han sido devueltos
-        ).select_related(
-            'bien', 'bien__tipo_bien', 'bien__marca', 'bien__modelo',
-            'asignacion__usuario', 'asignacion__subdependencia',
-            'bien__condicion'
-        ).order_by(
-            'asignacion__subdependencia__nombre', 
-            'asignacion__usuario__nombres_apellidos'
-        )
-    except Exception as e:
-        # Si falla, intentamos otra opción
-        print(f"Error con devuelto=False: {e}")
+        logger.info("Obteniendo datos de bienes asignados...")
         
-        # OPCIÓN 2: Mostrar todos los bienes sin filtrar
+        # OPCIÓN MÁS SEGURA: Obtener todos los datos sin filtros complejos primero
         detalles_asignacion = DetalleAsignacion.objects.select_related(
-            'bien', 'bien__tipo_bien', 'bien__marca', 'bien__modelo',
-            'asignacion__usuario', 'asignacion__subdependencia',
-            'bien__condicion'
-        ).order_by(
-            'asignacion__subdependencia__nombre', 
-            'asignacion__usuario__nombres_apellidos'
+            'bien',
+            'bien__tipo_bien',
+            'bien__marca',
+            'bien__modelo',
+            'bien__condicion',
+            'asignacion',
+            'asignacion__dependencia',
+            'asignacion__subdependencia',
+            'asignacion__usuario'
         ).all()
-
+        
+        # Filtrar por dependencia
+        detalles_asignacion = [d for d in detalles_asignacion 
+                              if d.asignacion and d.asignacion.dependencia == dependencia]
+        
+        conteo = len(detalles_asignacion)
+        logger.info(f"Detalles encontrados en la dependencia: {conteo}")
+        
+    except Exception as e:
+        logger.error(f"Error al obtener datos: {str(e)}")
+        detalles_asignacion = []
+        conteo = 0
+    
+    # Si no hay datos, crear reporte informativo
+    if not detalles_asignacion:
+        logger.warning("No hay datos de detalles de asignación")
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Información"
+        
+        estilos = get_estilos()
+        
+        ws['A1'] = f"REPORTE DE INVENTARIO - {dependencia.nombre.upper()}"
+        ws.merge_cells('A1:G1')
+        aplicar_estilo_celda(ws['A1'], estilos['titulo_principal'])
+        ws.row_dimensions[1].height = 35
+        
+        ws['A3'] = "INFORMACIÓN DEL SISTEMA"
+        ws.merge_cells('A3:G3')
+        aplicar_estilo_celda(ws['A3'], estilos['encabezado_tabla'])
+        
+        ws['A5'] = "Dependencia seleccionada:"
+        aplicar_estilo_celda(ws['A5'], estilos['etiqueta'])
+        ws['B5'] = dependencia.nombre
+        aplicar_estilo_celda(ws['B5'], estilos['info_valor'])
+        
+        ws['A6'] = "Subdependencias encontradas:"
+        aplicar_estilo_celda(ws['A6'], estilos['etiqueta'])
+        ws['B6'] = subdependencias.count()
+        aplicar_estilo_celda(ws['B6'], estilos['info_valor'])
+        
+        ws['A8'] = "No se encontraron bienes asignados en esta dependencia."
+        ws.merge_cells('A8:G8')
+        celda_mensaje = ws['A8']
+        celda_mensaje.font = Font(name='Calibri', size=12, bold=True, color="FF0000")
+        celda_mensaje.alignment = Alignment(horizontal="center", vertical="center")
+        
+        # Ajustar anchos
+        for col in range(1, 8):
+            ws.column_dimensions[get_column_letter(col)].width = 20
+        
+        wb.save(response)
+        return response
+    
+    logger.info(f"Procesando {conteo} detalles de asignación...")
+    
+    # Crear el libro de Excel
     wb = openpyxl.Workbook()
     
-    # Eliminar la hoja por defecto que crea openpyxl si existe
+    # Eliminar la hoja por defecto
     if 'Sheet' in wb.sheetnames:
         ws_default = wb['Sheet']
         wb.remove(ws_default)
     
     estilos = get_estilos()
     
-    # Verificar si hay datos
-    if not detalles_asignacion.exists():
-        # Crear una hoja con mensaje de que no hay datos con estilos del reporte anterior
-        ws = wb.create_sheet(title="Sin Datos")
-        ws.sheet_view.showGridLines = False
-        
-        # Título principal - con estilos del reporte anterior
-        ws['A1'] = "REPORTE DE BIENES POR RESPONSABLE"
-        ws.merge_cells('A1:F1')
-        aplicar_estilo_celda(ws['A1'], estilos['titulo_principal'])
-        ajustar_alto_fila(ws, 1, 35)
-        
-        # Mensaje principal
-        ws['A3'] = "No hay bienes asignados para mostrar"
-        ws.merge_cells('A3:F3')
-        celda_mensaje = ws['A3']
-        celda_mensaje.font = Font(name='Calibri', size=14, color=COLOR_TEXTO_OSCURO)
-        celda_mensaje.alignment = Alignment(horizontal="center", vertical="center")
-        
-        # Información adicional
-        ws['A5'] = "Fecha de generación:"
-        aplicar_estilo_celda(ws['A5'], estilos['etiqueta'])
-        
-        ws['B5'] = datetime.now().strftime("%d/%m/%Y %H:%M")
-        aplicar_estilo_celda(ws['B5'], estilos['info_valor'])
-        
-        # Ajustar anchos
-        ajustar_ancho_columnas(ws, {
-            'A': 25,
-            'B': 30,
-            'C': 15,
-            'D': 15,
-            'E': 15,
-            'F': 15
-        })
-        
-        # Ajustar alturas
-        ajustar_alto_fila(ws, 1, 35)
-        ajustar_alto_fila(ws, 3, 30)
-        
-        # Asegurar que haya al menos una hoja visible y activa
-        wb.active = ws
-        
-        wb.save(response)
-        return response
-    
-    # Diccionario para agrupar todos los datos por subdependencia
+    # Agrupar datos por subdependencia
     datos_por_subdependencia = {}
+    for detalle in detalles_asignacion:
+        if detalle.asignacion and detalle.asignacion.subdependencia:
+            subdependencia = detalle.asignacion.subdependencia
+            if subdependencia not in datos_por_subdependencia:
+                datos_por_subdependencia[subdependencia] = []
+            datos_por_subdependencia[subdependencia].append(detalle)
     
-    # 2. Agrupar por Subdependencia (nivel superior)
-    key_subdependencia = lambda x: x.asignacion.subdependencia
-    for subdependencia, grupo_subdep in groupby(detalles_asignacion, key=key_subdependencia):
-        grupo_subdep_lista = list(grupo_subdep)
+    logger.info(f"Datos agrupados por {len(datos_por_subdependencia)} subdependencias")
+    
+    # Crear una hoja por cada subdependencia
+    for subdependencia in subdependencias:
+        nombre_hoja = sanitizar_nombre_hoja(subdependencia.nombre)
+        ws = wb.create_sheet(title=nombre_hoja)
         
-        # Almacenar los datos de esta subdependencia
-        datos_por_subdependencia[subdependencia] = {
-            'grupo_subdep_lista': grupo_subdep_lista,
-            'responsables': {}
+        # Configurar anchos de columnas
+        anchos = {
+            'A': 20,   # Código
+            'B': 25,   # Tipo
+            'C': 20,   # Marca
+            'D': 20,   # Modelo
+            'E': 25,   # Serial
+            'F': 20,   # Condición
+            'G': 30,   # Responsable
         }
         
-        # 3. Agrupar por Responsable dentro de esta subdependencia
-        key_responsable = lambda x: x.asignacion.usuario
-        for responsable, grupo_resp in groupby(grupo_subdep_lista, key=key_responsable):
-            datos_por_subdependencia[subdependencia]['responsables'][responsable] = list(grupo_resp)
-    
-    # 4. Crear una hoja por cada subdependencia
-    for subdependencia, datos in datos_por_subdependencia.items():
-        # Crear nombre válido para la hoja
-        nombre_hoja = sanitizar_nombre_hoja(subdependencia.nombre)
+        for col, ancho in anchos.items():
+            ws.column_dimensions[col].width = ancho
         
-        # Crear nueva hoja
-        ws = wb.create_sheet(title=nombre_hoja)
         row_num = 1
         
-        # Configurar ancho de columnas (6 columnas)
-        ajustar_ancho_columnas(ws, {
-            1: 20,   # Código
-            2: 25,   # Tipo
-            3: 20,   # Marca
-            4: 20,   # Modelo
-            5: 25,   # Serial
-            6: 20,   # Condición
-        })
-        
-        # Título de Subdependencia - con estilos del reporte anterior
+        # Título principal
         fecha_actual = datetime.now().strftime("%d/%m/%Y")
-        ws.merge_cells(f'A{row_num}:F{row_num}')
-        ws.cell(row=row_num, column=1).value = f"REPORTE DE BIENES POR RESPONSABLE - {subdependencia.nombre.upper()} - {fecha_actual}"
-        aplicar_estilo_celda(ws.cell(row=row_num, column=1), estilos['titulo_principal'])
-        ajustar_alto_fila(ws, row_num, 35)
-        row_num += 2  # Espacio después del título
+        ws.merge_cells(f'A{row_num}:G{row_num}')
+        celda_titulo = ws.cell(row=row_num, column=1, 
+                              value=f"INVENTARIO DE BIENES - {subdependencia.nombre.upper()} - {fecha_actual}")
+        aplicar_estilo_celda(celda_titulo, estilos['titulo_principal'])
+        ws.row_dimensions[row_num].height = 35
+        row_num += 2
         
-        # 5. Agrupar por Responsable (nivel anidado)
-        for responsable, grupo_resp in datos['responsables'].items():
+        # Información de dependencia
+        ws.cell(row=row_num, column=1, value="DEPENDENCIA:")
+        aplicar_estilo_celda(ws.cell(row=row_num, column=1), estilos['etiqueta'])
+        ws.merge_cells(f'B{row_num}:G{row_num}')
+        ws.cell(row=row_num, column=2, value=dependencia.nombre)
+        aplicar_estilo_celda(ws.cell(row=row_num, column=2), estilos['info_valor'])
+        row_num += 1
+        
+        # Información de subdependencia
+        ws.cell(row=row_num, column=1, value="SUBDEPENDENCIA:")
+        aplicar_estilo_celda(ws.cell(row=row_num, column=1), estilos['etiqueta'])
+        ws.merge_cells(f'B{row_num}:G{row_num}')
+        ws.cell(row=row_num, column=2, value=subdependencia.nombre)
+        aplicar_estilo_celda(ws.cell(row=row_num, column=2), estilos['info_valor'])
+        row_num += 2
+        
+        # Obtener bienes para esta subdependencia
+        bienes_subdependencia = datos_por_subdependencia.get(subdependencia, [])
+        
+        if bienes_subdependencia:
+            # Encabezados de tabla
+            cabeceras = ['N° DE INVENTARIO DEL BIEN', 'TIPO', 'MARCA', 'MODELO', 'CONDICIÓN', 'USUARIO']
             
-            # Subtítulo del Responsable - con estilos del reporte anterior
-            ws.merge_cells(f'A{row_num}:F{row_num}')
-            ws.cell(row=row_num, column=1).value = f"RESPONSABLE: {responsable.nombres_apellidos.upper()}"
-            aplicar_estilo_celda(ws.cell(row=row_num, column=1), estilos['encabezado_seccion'])
-            ajustar_alto_fila(ws, row_num, 25)
-            row_num += 1
-
-            # Encabezados de la tabla de bienes - con estilos del reporte anterior
-            cabeceras = ['CÓDIGO', 'TIPO', 'MARCA', 'MODELO', 'SERIAL', 'CONDICIÓN']
             for col_num, cabecera in enumerate(cabeceras, 1):
-                celda = ws.cell(row=row_num, column=col_num)
-                celda.value = cabecera
+                celda = ws.cell(row=row_num, column=col_num, value=cabecera)
                 aplicar_estilo_celda(celda, estilos['encabezado_tabla'])
-            ajustar_alto_fila(ws, row_num, 25)
+            
+            ws.row_dimensions[row_num].height = 25
             row_num += 1
-
-            # Escribir los bienes del responsable - con estilos alternados como en el reporte anterior
-            for idx, detalle in enumerate(grupo_resp):
-                # Determinar estilo de fila (alternado como en el reporte anterior)
-                estilo_fila = estilos['celda_datos_alterna'] if idx % 2 == 0 else estilos['celda_datos']
-                estilo_fila_izquierda = estilos['dato_izquierda_alterna'] if idx % 2 == 0 else estilos['dato_izquierda']
+            
+            # Escribir datos
+            for idx, detalle in enumerate(bienes_subdependencia):
+                # Determinar estilos alternados
+                if idx % 2 == 0:
+                    estilo_base = estilos['celda_datos_alterna']
+                    estilo_izquierda = estilos['dato_izquierda_alterna']
+                else:
+                    estilo_base = estilos['celda_datos']
+                    estilo_izquierda = estilos['dato_izquierda']
                 
-                datos_fila_original = [
-                    detalle.bien.codigo_bien,
-                    detalle.bien.tipo_bien.nombre if detalle.bien.tipo_bien else "Sin especificar",
-                    detalle.bien.marca.nombre if detalle.bien.marca else "Sin especificar",
-                    detalle.bien.modelo.nombre if detalle.bien.modelo else "Sin especificar",
-                    detalle.bien.serial if detalle.bien.serial else "Sin serial",
-                    detalle.bien.condicion.nombre if detalle.bien.condicion else "Sin especificar"
+                # Obtener datos del bien
+                bien = detalle.bien
+                asignacion = detalle.asignacion
+                
+                # Preparar datos de la fila
+                datos_fila = [
+                    bien.codigo_bien if bien and bien.codigo_bien else "Sin código",
+                    bien.tipo_bien.nombre if bien and bien.tipo_bien and bien.tipo_bien.nombre else "Sin tipo",
+                    bien.marca.nombre if bien and bien.marca and bien.marca.nombre else "Sin marca",
+                    bien.modelo.nombre if bien and bien.modelo and bien.modelo.nombre else "Sin modelo",
+                    bien.condicion.nombre if bien and bien.condicion and bien.condicion.nombre else "Sin condición",
+                    asignacion.usuario.nombres_apellidos if asignacion and asignacion.usuario and asignacion.usuario.nombres_apellidos else "Sin asignar"
                 ]
                 
-                # Aplicar estilos a cada celda
-                for col_num, dato in enumerate(datos_fila_original, 1):
-                    celda = ws.cell(row=row_num, column=col_num)
-                    celda.value = str(dato) if dato else "Sin datos"
+                # Escribir cada celda
+                for col_num, valor in enumerate(datos_fila, 1):
+                    celda = ws.cell(row=row_num, column=col_num, value=str(valor))
                     
-                    # Aplicar estilo según el tipo de dato
-                    if col_num == 1:  # Código - centrado
-                        aplicar_estilo_celda(celda, estilo_fila)
-                    else:  # Resto de columnas - alineadas a la izquierda
-                        aplicar_estilo_celda(celda, estilo_fila_izquierda)
+                    if col_num == 1:  # Código (centrado)
+                        aplicar_estilo_celda(celda, estilo_base)
+                    else:  # Resto de columnas (izquierda)
+                        aplicar_estilo_celda(celda, estilo_izquierda)
                 
                 row_num += 1
             
-            # Espacio después de cada responsable (2 filas como en el reporte anterior)
-            row_num += 2
-        
-        # Ajustar altura de filas automáticamente
-        for row in range(1, row_num + 1):
-            if ws.row_dimensions[row].height is None or ws.row_dimensions[row].height < 20:
-                ws.row_dimensions[row].height = 20
-
-    # 7. Crear una hoja de índice/resumen si hay más de una subdependencia
-    if len(datos_por_subdependencia) > 1:
-        ws_indice = wb.create_sheet(title="Índice")
-        ws_indice.sheet_view.showGridLines = False
-        
-        # Configurar ancho de columnas para el índice
-        ajustar_ancho_columnas(ws_indice, {
-            1: 8,   # No.
-            2: 50,  # Subdependencia
-            3: 20,  # Total Responsables
-            4: 20,  # Total Bienes
-        })
-        
-        # Título del índice - con estilos del reporte anterior
-        ws_indice['A1'] = "ÍNDICE DE SUBDEPENDENCIAS"
-        ws_indice.merge_cells('A1:D1')
-        aplicar_estilo_celda(ws_indice['A1'], estilos['titulo_principal'])
-        ajustar_alto_fila(ws_indice, 1, 35)
-        
-        row_indice = 3
-        
-        # Encabezados del índice - con estilos del reporte anterior
-        encabezados_indice = ["No.", "SUBDEPENDENCIA", "TOTAL RESPONSABLES", "TOTAL BIENES"]
-        for col_num, encabezado in enumerate(encabezados_indice, 1):
-            celda = ws_indice.cell(row=row_indice, column=col_num)
-            celda.value = encabezado
-            aplicar_estilo_celda(celda, estilos['encabezado_tabla'])
-        ajustar_alto_fila(ws_indice, row_indice, 25)
-        row_indice += 1
-        
-        # Listar todas las subdependencias con hipervínculos
-        for idx, (subdependencia, datos) in enumerate(datos_por_subdependencia.items(), 1):
-            nombre_hoja = sanitizar_nombre_hoja(subdependencia.nombre)
+            # Total de bienes al final
+            ws.merge_cells(f'A{row_num}:F{row_num}')
+            total_celda = ws.cell(row=row_num, column=1, value=f"TOTAL DE BIENES: {len(bienes_subdependencia)}")
+            aplicar_estilo_celda(total_celda, estilos['etiqueta'])
+            row_num += 1
             
-            # Calcular total de bienes para esta subdependencia
-            total_bienes = sum(len(grupo) for grupo in datos['responsables'].values())
-            
-            # Determinar estilo de fila alternado
-            estilo_fila = estilos['celda_datos_alterna'] if idx % 2 == 0 else estilos['celda_datos']
-            
-            # Número
-            celda_numero = ws_indice.cell(row=row_indice, column=1)
-            celda_numero.value = idx
-            aplicar_estilo_celda(celda_numero, estilo_fila)
-            
-            # Nombre con hipervínculo (estilo de enlace como en el reporte anterior)
-            celda_nombre = ws_indice.cell(row=row_indice, column=2)
-            celda_nombre.value = subdependencia.nombre
-            celda_nombre.hyperlink = f"#{nombre_hoja}!A1"
-            celda_nombre.font = Font(name='Calibri', size=10, color="2563EB", underline="single")
-            celda_nombre.fill = estilo_fila['fill'] if 'fill' in estilo_fila else None
-            celda_nombre.alignment = Alignment(horizontal="left", vertical="center")
-            celda_nombre.border = estilos['celda_datos']['border']
-            
-            # Total de responsables
-            celda_responsables = ws_indice.cell(row=row_indice, column=3)
-            celda_responsables.value = len(datos['responsables'])
-            aplicar_estilo_celda(celda_responsables, estilo_fila)
-            
-            # Total de bienes
-            celda_bienes = ws_indice.cell(row=row_indice, column=4)
-            celda_bienes.value = total_bienes
-            aplicar_estilo_celda(celda_bienes, estilo_fila)
-            
-            row_indice += 1
-        
-        # Ajustar altura de filas del índice
-        for row in range(1, row_indice + 1):
-            if ws_indice.row_dimensions[row].height is None or ws_indice.row_dimensions[row].height < 20:
-                ws_indice.row_dimensions[row].height = 20
-        
-        # Mover la hoja índice al principio
-        indice_sheet = wb["Índice"]
-        wb._sheets.insert(0, wb._sheets.pop(wb._sheets.index(indice_sheet)))
+        else:
+            # Mensaje si no hay bienes
+            ws.merge_cells(f'A{row_num}:G{row_num}')
+            celda_mensaje = ws.cell(row=row_num, column=1, value="NO HAY BIENES ASIGNADOS EN ESTA SUBDEPENDENCIA")
+            aplicar_estilo_celda(celda_mensaje, estilos['encabezado_tabla'])
+            ws.row_dimensions[row_num].height = 25
+            row_num += 1
     
-    # 8. Si solo hay una subdependencia, moverla al principio
-    elif len(datos_por_subdependencia) == 1:
-        subdependencia = list(datos_por_subdependencia.keys())[0]
-        nombre_hoja = sanitizar_nombre_hoja(subdependencia.nombre)
-        
-        # Asegurarnos de que la hoja existe antes de moverla
-        if nombre_hoja in wb.sheetnames:
-            ws_unica = wb[nombre_hoja]
-            wb._sheets.insert(0, wb._sheets.pop(wb._sheets.index(ws_unica)))
-    
-    # 9. HOJA DE RESUMEN - Similar al reporte anterior
+    # Crear hoja de resumen
     ws_resumen = wb.create_sheet(title="Resumen")
     
-    # Configurar ancho de columnas para resumen
-    ajustar_ancho_columnas(ws_resumen, {
-        1: 35,  # Etiqueta
-        2: 20,  # Valor
-    })
+    # Configurar anchos
+    anchos_resumen = {'A': 8, 'B': 40, 'C': 15, 'D': 25}
+    for col, ancho in anchos_resumen.items():
+        ws_resumen.column_dimensions[col].width = ancho
     
-    # Título de resumen - con estilos del reporte anterior
-    ws_resumen['A1'] = "RESUMEN GENERAL DE BIENES POR RESPONSABLE"
-    ws_resumen.merge_cells('A1:B1')
-    aplicar_estilo_celda(ws_resumen['A1'], estilos['titulo_principal'])
-    ajustar_alto_fila(ws_resumen, 1, 35)
+    row_num = 1
     
-    # Estadísticas generales
-    total_subdependencias = len(datos_por_subdependencia)
-    total_responsables = sum(len(datos['responsables']) for datos in datos_por_subdependencia.values())
-    total_bienes_general = sum(
-        sum(len(grupo) for grupo in datos['responsables'].values()) 
-        for datos in datos_por_subdependencia.values()
-    )
+    # Título del resumen
+    ws_resumen.merge_cells(f'A{row_num}:D{row_num}')
+    titulo_resumen = ws_resumen.cell(row=row_num, column=1, 
+                                   value=f"RESUMEN DE INVENTARIO - {dependencia.nombre.upper()}")
+    aplicar_estilo_celda(titulo_resumen, estilos['titulo_principal'])
+    ws_resumen.row_dimensions[row_num].height = 35
+    row_num += 2
     
-    datos_resumen = [
-        ("Total de Subdependencias", total_subdependencias),
-        ("Total de Responsables", total_responsables),
-        ("Total de Bienes Asignados", total_bienes_general),
-        ("", ""),
-        ("Fecha de generación", datetime.now().strftime("%d/%m/%Y %H:%M"))
-    ]
+    # Encabezados del resumen
+    encabezados = ["No.", "SUBDEPENDENCIA", "TOTAL BIENES", "ENLACE"]
+    for col_num, encabezado in enumerate(encabezados, 1):
+        celda = ws_resumen.cell(row=row_num, column=col_num, value=encabezado)
+        aplicar_estilo_celda(celda, estilos['encabezado_tabla'])
     
-    fila_resumen = 3
-    for etiqueta, valor in datos_resumen:
-        if etiqueta:  # Si no es fila vacía
-            # Etiqueta
-            celda_etiqueta = ws_resumen.cell(row=fila_resumen, column=1, value=etiqueta)
-            aplicar_estilo_celda(celda_etiqueta, estilos['etiqueta'])
-            
-            # Valor
-            celda_valor = ws_resumen.cell(row=fila_resumen, column=2, value=valor)
-            aplicar_estilo_celda(celda_valor, estilos['info_valor'])
+    ws_resumen.row_dimensions[row_num].height = 25
+    row_num += 1
+    
+    # Datos del resumen
+    total_general = 0
+    for idx, subdependencia in enumerate(subdependencias, 1):
+        nombre_hoja = sanitizar_nombre_hoja(subdependencia.nombre)
+        bienes_subdependencia = datos_por_subdependencia.get(subdependencia, [])
+        total_bienes = len(bienes_subdependencia)
+        total_general += total_bienes
         
-        fila_resumen += 1
+        # Estilo alternado
+        if idx % 2 == 0:
+            estilo_fila = estilos['celda_datos_alterna']
+        else:
+            estilo_fila = estilos['celda_datos']
+        
+        # Número
+        celda_num = ws_resumen.cell(row=row_num, column=1, value=idx)
+        aplicar_estilo_celda(celda_num, estilo_fila)
+        
+        # Nombre de subdependencia
+        celda_nombre = ws_resumen.cell(row=row_num, column=2, value=subdependencia.nombre)
+        
+        # Copiar estilo de la celda de datos pero mantener el texto negro
+        celda_nombre.font = Font(name='Calibri', size=10, color="000000")
+        celda_nombre.alignment = Alignment(horizontal="left", vertical="center")
+        celda_nombre.border = estilo_fila['border']
+        
+        # Solo aplicar fill si existe en el estilo
+        if 'fill' in estilo_fila and estilo_fila['fill']:
+            celda_nombre.fill = estilo_fila['fill']
+        
+        # Agregar hipervínculo si tiene bienes
+        if total_bienes > 0 and nombre_hoja in wb.sheetnames:
+            celda_nombre.hyperlink = f"#{nombre_hoja}!A1"
+            celda_nombre.font = Font(name='Calibri', size=10, color="2563EB", underline="single")
+        
+        # Total de bienes
+        celda_total = ws_resumen.cell(row=row_num, column=3, value=total_bienes)
+        aplicar_estilo_celda(celda_total, estilo_fila)
+        
+        # Enlace (si hay bienes)
+        celda_enlace = ws_resumen.cell(row=row_num, column=4)
+        
+        if total_bienes > 0 and nombre_hoja in wb.sheetnames:
+            celda_enlace.value = "Ver detalle"
+            celda_enlace.hyperlink = f"#{nombre_hoja}!A1"
+            celda_enlace.font = Font(name='Calibri', size=10, color="2563EB", underline="single")
+        else:
+            celda_enlace.value = "Sin bienes"
+            celda_enlace.font = Font(name='Calibri', size=10, color="000000")
+        
+        # Aplicar estilo base
+        celda_enlace.alignment = Alignment(horizontal="center", vertical="center")
+        celda_enlace.border = estilo_fila['border']
+        
+        # Solo aplicar fill si existe
+        if 'fill' in estilo_fila and estilo_fila['fill']:
+            celda_enlace.fill = estilo_fila['fill']
+        
+        row_num += 1
     
-    # Mover la hoja resumen después del índice (si existe) o al principio
-    if "Índice" in wb.sheetnames:
-        # Mover resumen después del índice
-        resumen_sheet = wb["Resumen"]
-        idx_resumen = wb._sheets.index(resumen_sheet)
-        idx_indice = wb._sheets.index(wb["Índice"])
-        if idx_resumen > idx_indice:
-            wb._sheets.insert(idx_indice + 1, wb._sheets.pop(idx_resumen))
-    else:
-        # Si no hay índice, mover resumen al principio
-        resumen_sheet = wb["Resumen"]
-        wb._sheets.insert(0, wb._sheets.pop(wb._sheets.index(resumen_sheet)))
+    # Total general
+    row_num += 1
+    ws_resumen.merge_cells(f'A{row_num}:B{row_num}')
+    celda_total_label = ws_resumen.cell(row=row_num, column=1, value="TOTAL GENERAL:")
+    aplicar_estilo_celda(celda_total_label, estilos['etiqueta'])
     
-    # 10. Asegurar que haya al menos una hoja visible y activa
-    if len(wb.sheetnames) == 0:
-        # Crear una hoja por defecto si por alguna razón no hay hojas
-        ws = wb.create_sheet(title="Reporte")
-        ws['A1'] = "Reporte Generado"
-        aplicar_estilo_celda(ws['A1'], estilos['titulo_principal'])
-        ws.merge_cells('A1:F1')
-        ajustar_alto_fila(ws, 1, 35)
+    celda_total_valor = ws_resumen.cell(row=row_num, column=3, value=total_general)
+    aplicar_estilo_celda(celda_total_valor, estilos['info_valor'])
     
-    # Establecer la primera hoja como activa
+    # Fecha de generación
+    row_num += 2
+    ws_resumen.cell(row=row_num, column=1, value="Fecha de generación:")
+    aplicar_estilo_celda(ws_resumen.cell(row=row_num, column=1), estilos['etiqueta'])
+    
+    ws_resumen.cell(row=row_num, column=2, value=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    aplicar_estilo_celda(ws_resumen.cell(row=row_num, column=2), estilos['info_valor'])
+    
+    # Mover resumen al principio
+    resumen_sheet = wb["Resumen"]
+    wb._sheets.insert(0, wb._sheets.pop(wb._sheets.index(resumen_sheet)))
+    
+    # Configurar hoja activa
     wb.active = wb.worksheets[0]
+    
+    # Guardar
+    wb.save(response)
+    
+    logger.info(f"Reporte generado exitosamente. Total general: {total_general} bienes")
+    return response
+
+
+# --- VERSIÓN SIMPLIFICADA PARA DEPENDENCIA PREDETERMINADA ---
+
+def exportar_bienes_dependencia_predeterminada(request):
+    """
+    Versión que busca la dependencia por nombre o usa la primera disponible
+    """
+    logger.info("Generando reporte para dependencia predeterminada")
+    
+    # Opción 1: Buscar por nombre - CAMBIA ESTO al nombre de tu dependencia
+    nombre_dependencia_predeterminada = "NOMBRE_DE_TU_DEPENDENCIA_AQUI"  # ¡CAMBIA ESTO!
+    
+    try:
+        dependencia = Dependencia.objects.get(nombre__icontains=nombre_dependencia_predeterminada)
+        logger.info(f"Usando dependencia predeterminada por nombre: {dependencia.nombre}")
+        return exportar_bienes_por_dependencia_excel(request, dependencia_id=dependencia.id)
+    except Dependencia.DoesNotExist:
+        logger.warning(f"Dependencia '{nombre_dependencia_predeterminada}' no encontrada")
+    
+    # Opción 2: Usar la primera dependencia
+    try:
+        dependencia = Dependencia.objects.first()
+        if dependencia:
+            logger.info(f"Usando primera dependencia disponible: {dependencia.nombre}")
+            return exportar_bienes_por_dependencia_excel(request, dependencia_id=dependencia.id)
+    except Exception as e:
+        logger.error(f"Error al obtener primera dependencia: {e}")
+    
+    # Opción 3: Reporte de error
+    logger.error("No se pudo encontrar ninguna dependencia")
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    fecha_descarga = datetime.now().strftime("%Y%m%d_%H%M")
+    response['Content-Disposition'] = f'attachment; filename="error_reporte_{fecha_descarga}.xlsx"'
+    
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Error"
+    
+    ws['A1'] = "ERROR AL GENERAR REPORTE"
+    ws['A3'] = "No se pudo encontrar la dependencia predeterminada."
+    ws['A4'] = f"Nombre buscado: '{nombre_dependencia_predeterminada}'"
+    ws['A5'] = "Por favor, configure al menos una dependencia en el sistema."
     
     wb.save(response)
     return response

@@ -4,6 +4,7 @@ from django.db import models
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
+from apps.auxiliares.models.catalogo_bienes import Estado
 
 from apps.bien.models.asignaciones import Asignacion
 from apps.bien.models.detalle_asignacion import DetalleAsignacion
@@ -18,11 +19,19 @@ class DetalleAsignacionInline(TabularInline):
 
 
 @admin.register(Asignacion)
+
 class AsignacionAdmin(ModelAdmin):
-    list_display = ('usuario', 'dependencia', 'fecha_asignacion', 'nro_asignacion', 'estatus_badge_outline')
-    search_fields = ('usuario__nombres_apellidos', 'dependencia__nombre', 'nro_asignacion')
-    list_filter = ('fecha_asignacion', 'estatus')
+    list_display = ('usuario', 'subdependencia', 'fecha_asignacion', 'nro_asignacion', 'estatus_badge_outline')
+    search_fields = ('usuario__nombres_apellidos', 'dependencia__nombre', 'nro_asignacion', 'subdependencia__nombre')
+    list_filter = ('fecha_asignacion', 'estatus', 'subdependencia__nombre')
     
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Filtramos estatus solo en el inline si es necesario
+        if db_field.name == "estatus":
+            # Si quieres también filtrar en el inline
+            kwargs["queryset"] = Estado.objects.filter(tipo='Asignacion')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
   
     inlines = [DetalleAsignacionInline]
     
