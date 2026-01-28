@@ -419,10 +419,24 @@ from django.utils.translation import gettext_lazy as _
 from apps.bien.views.dashboard import dashboard_callback
 UNFOLD = {
     "SITE_TITLE": "Sistema de gestion de inventario",
-    "SITE_HEADER": "Administración SGAB",
+    "SITE_HEADER": "",
     "SITE_SUBHEADER": "Panel de administración",
     'WIZARD_CONFIRMATION': True,  # Mostrar confirmación al final del wizard
     'WIZARD_DEFAULT_STEP': 1,  # Paso inicial del wizard
+    "SITE_DROPDOWN": [
+        {
+            "icon": 'inventory',
+            "title": "Reporte de Inventario",
+            "link": "/bienes/reporte-inventario/",
+        },
+        # ...
+    ],
+
+    "LOGIN": {
+
+        "template": "admin/login.html",
+        "image": lambda request: static("img/fondo_login.jpg"),
+    },
 
     # Dashboard callback
     "DASHBOARD_CALLBACK":dashboard_callback,

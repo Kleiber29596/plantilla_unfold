@@ -1,0 +1,36 @@
+/* static/css/dashboard.css */
+
+/* Sobrescribir estilos solo si es necesario */
+.dashboard {
+    padding: 0;
+}
+
+/* Ajustes para modo oscuro en gráficos */
+.dark canvas {
+    filter: brightness(0.9) contrast(1.1);
+}
+
+/* Mejorar contraste en modo oscuro */
+.dark .bg-white {
+    background-color: var(--color-base-900) !important;
+    border-color: var(--color-base-800) !important;
+}
+
+.dark .text-important {
+    color: var(--color-font-important-dark) !important;
+}
+
+.dark .text-subtle {
+    color: var(--color-font-subtle-dark) !important;
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .chart-container {
+        height: 300px !important;
+    }
+}

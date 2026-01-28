@@ -7,7 +7,6 @@ class Asignacion(models.Model):
     dependencia      = models.ForeignKey('auxiliares.Dependencia', on_delete=models.PROTECT)
     subdependencia   = models.ForeignKey('auxiliares.Subdependencia', on_delete=models.PROTECT)
     usuario          = models.ForeignKey('bien.Personal', on_delete=models.PROTECT)
-    observaciones    = models.TextField()
     estatus          = models.ForeignKey(Estado, on_delete=models.PROTECT, default=1)
 
     class Meta:

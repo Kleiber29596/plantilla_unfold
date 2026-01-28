@@ -14,11 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (data.cargo) {
                             const cargoInput = document.getElementById('id_cargo');
                             const nombreInput = document.getElementById('id_nombres_apellidos');
+                            const departamentoInput = document.getElementById('id_departamento');
                             if (cargoInput) {
                                 cargoInput.value = data.cargo;
                             }
                             if (nombreInput) {
                                 nombreInput.value = data.nombre_apellido;
+                            }
+                            if (departamentoInput) {
+                                departamentoInput.value = data.dependencia;
                             }
                         }
                     });

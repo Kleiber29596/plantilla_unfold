@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
 import requests
 from decouple       import config
+from apps.auxiliares.models import Dependencia
 
 
 @staff_member_required
@@ -15,7 +16,7 @@ def consultar_cargo(request):
     url_base = config('API_OPERATIVO')
     try:
         url = f'{url_base}/nomina/trabajador/{origen}/{cedula}/'
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
 
         if response.status_code == 200:
             data = response.json()
@@ -23,9 +24,12 @@ def consultar_cargo(request):
             # Suponemos que la API retorna una lista de uno o más trabajadores
             if isinstance(data, list) and data:
                 trabajador = data[0]  # Tomamos el primero de la lista
+                dependencia_nombre = trabajador.get('dependencia', '').strip()
+
                 return JsonResponse({  
-                'cargo': trabajador.get('cargo', ''),
-                'nombre_apellido': trabajador.get('nombre_apellido', ''),
+                    'cargo': trabajador.get('cargo', '').strip(),
+                    'nombre_apellido': trabajador.get('nombre_apellido', '').strip(),
+                    'dependencia': dependencia_nombre,
                 })
             else:
                 return JsonResponse({'error': 'No se encontró información del trabajador'}, status=404)
