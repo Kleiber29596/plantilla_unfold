@@ -24,7 +24,7 @@ def consultar_cargo(request):
             # Suponemos que la API retorna una lista de uno o más trabajadores
             if isinstance(data, list) and data:
                 trabajador = data[0]  # Tomamos el primero de la lista
-                dependencia_nombre = trabajador.get('dependencia', '').strip()
+                dependencia_nombre = trabajador.get('codigo_dependencia', '').strip()
 
                 return JsonResponse({  
                     'cargo': trabajador.get('cargo', '').strip(),

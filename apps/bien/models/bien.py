@@ -6,6 +6,7 @@ from apps.auxiliares.models.catalogo_bienes import Marca
 from apps.auxiliares.models.catalogo_bienes import Modelo
 from apps.auxiliares.models.catalogo_bienes import TipoBien
 
+
 class Bien(models.Model):
     codigo_bien         = models.CharField(max_length=50, unique=True)
     tipo_bien           = models.ForeignKey(TipoBien, on_delete=models.PROTECT, null=True, blank=True)

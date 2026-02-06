@@ -15,7 +15,9 @@ from unfold.contrib.forms.widgets import WysiwygWidget
 class DetalleAsignacionInline(TabularInline):
     model = DetalleAsignacion
     extra = 1
-    classes = ['collapse']
+    tab = True
+    verbose_name = 'Bien'
+    verbose_name_plural = 'Bienes'    
 
 
 @admin.register(Asignacion)
