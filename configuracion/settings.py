@@ -416,7 +416,7 @@ NINJA_JWT                       =   {
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from apps.bien.views.dashboard import dashboard_callback
+ 
 UNFOLD = {
     "SITE_TITLE": "Sistema de gestion de inventario",
     "SITE_HEADER": "",
@@ -439,7 +439,7 @@ UNFOLD = {
     },
 
     # Dashboard callback
-    "DASHBOARD_CALLBACK":dashboard_callback,
+    "DASHBOARD_CALLBACK":"apps.bien.views.dashboard.dashboard_callback",
 
     "SITE_ICON": {
         "light": lambda request: static("img/logomppe.png"),
@@ -467,6 +467,7 @@ UNFOLD = {
         lambda request: static("js/script.js"),
     ],
 
+    
     "SIDEBAR": {
         "show_search": True,
         "show_all_applications": True,  # O False si quieres control manual
@@ -501,7 +502,13 @@ UNFOLD = {
                 "separator": True,
                 "collapsible": True,
                 "items": [
-                     {
+
+                    {
+                        "title": "Personal",
+                        "icon": "person",
+                        "link": reverse_lazy("admin:bien_personal_changelist"),
+                    },
+                    {
                         "title": "Bienes",
                         "icon": "inventory",
                         # CORRECTO: admin:cuenta_user_changelist
@@ -521,11 +528,7 @@ UNFOLD = {
                         "icon": "assignment_return",
                         "link": reverse_lazy("admin:bien_devolucion_changelist"),
                     },
-                    {
-                        "title": "Personal",
-                        "icon": "person",
-                        "link": reverse_lazy("admin:bien_personal_changelist"),
-                    },
+                    
 
                    
                 ],

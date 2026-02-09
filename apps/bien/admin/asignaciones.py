@@ -10,6 +10,8 @@ from apps.bien.models.asignaciones import Asignacion
 from apps.bien.models.detalle_asignacion import DetalleAsignacion
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.contrib.forms.widgets import WysiwygWidget
+from apps.auxiliares.models.dependencia import Dependencia
+from apps.auxiliares.models.subdependencia import Subdependencia
 
 
 class DetalleAsignacionInline(TabularInline):
@@ -78,3 +80,58 @@ class AsignacionAdmin(ModelAdmin):
         )
     
     estatus_badge_outline.short_description = 'Estatus'
+
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+        
+        # Obtener parámetros de la URL
+        usuario_id = request.GET.get('usuario')
+        dependencia_id = request.GET.get('dependencia')
+        subdependencia_id = request.GET.get('subdependencia')
+        
+        # Precargar usuario si se proporciona
+        if usuario_id:
+            from apps.bien.models.personal import Personal
+            try:
+                usuario = Personal.objects.get(id=usuario_id)
+                initial['usuario'] = usuario
+            except Personal.DoesNotExist:
+                pass
+        
+        # Precargar dependencia si se proporciona
+        if dependencia_id:
+            # Ajusta la importación según tu modelo de Dependencia
+            try:
+                dependencia = Dependencia.objects.get(id=dependencia_id)
+                initial['dependencia'] = dependencia
+            except Dependencia.DoesNotExist:
+                pass
+        
+        # Precargar subdependencia si se proporciona
+        if subdependencia_id:
+            # Ajusta la importación según tu modelo de Subdependencia
+           
+            try:
+                subdependencia = Subdependencia.objects.get(id=subdependencia_id)
+                initial['subdependencia'] = subdependencia
+            except Subdependencia.DoesNotExist:
+                pass
+        
+        return initial
+    
+    # Opcional: Puedes también sobrescribir el método add_view para agregar contexto extra
+    def add_view(self, request, form_url='', extra_context=None):
+        if extra_context is None:
+            extra_context = {}
+        
+        # Obtener el usuario desde la URL
+        usuario_id = request.GET.get('usuario')
+        if usuario_id:
+            try:
+                from apps.bien.models.personal import Personal
+                usuario = Personal.objects.get(id=usuario_id)
+                extra_context['usuario_seleccionado'] = usuario
+            except Personal.DoesNotExist:
+                pass
+        
+        return super().add_view(request, form_url, extra_context)

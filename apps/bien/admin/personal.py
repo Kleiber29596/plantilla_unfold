@@ -96,30 +96,46 @@ class PersonalAdmin(ModelAdmin):
     
     @admin.display(description=_('Acciones'))
     def acciones_rapidas(self, obj):
+        # Construir URL con todos los parámetros
+        base_url = reverse('admin:bien_asignacion_add')
+        params = []
+        
+        # Agregar usuario
+        params.append(f'usuario={obj.id}')
+        
+        # Agregar dependencia (departamento) si existe
+        if obj.departamento:
+            params.append(f'dependencia={obj.departamento.id}')
+        
+        # Agregar subdependencia si existe
+        if obj.subdependencia:
+            params.append(f'subdependencia={obj.subdependencia.id}')
+        
+        query_string = '?' + '&'.join(params)
+        
         return format_html(
             '''
             <div style="display: flex; gap: 0.25rem;">
                 <a href="{}" 
-                   style="display: inline-flex; align-items: center; 
-                          padding: 0.25rem 0.5rem; border-radius: 0.375rem; 
-                          font-size: 0.75rem; font-weight: 500; 
-                          border: 1px solid #d1d5db; text-decoration: none;">
+                style="display: inline-flex; align-items: center; 
+                        padding: 0.25rem 0.5rem; border-radius: 0.375rem; 
+                        font-size: 0.75rem; font-weight: 500; 
+                        border: 1px solid #d1d5db; text-decoration: none;">
                     Ver
                 </a>
                 <a href="{}" 
-                   style="display: inline-flex; align-items: center; 
-                          padding: 0.25rem 0.5rem; border-radius: 0.375rem; 
-                          font-size: 0.75rem; font-weight: 500; 
-                          border: 1px solid #a5b4fc; text-decoration: none;">
+                style="display: inline-flex; align-items: center; 
+                        padding: 0.25rem 0.5rem; border-radius: 0.375rem; 
+                        font-size: 0.75rem; font-weight: 500; 
+                        border: 1px solid #a5b4fc; text-decoration: none;">
                     Asignar
                 </a>
             </div>
             ''',
             reverse('admin:bien_personal_change', args=[obj.id]),
-            reverse('admin:bien_asignacion_add') + f'?usuario={obj.id}'
+            base_url + query_string
         )
     
-    # Campo de solo lectura que mostrará la información de bienes
     def informacion_bienes(self, obj):
         """Muestra información de bienes asignados en el formulario"""
         if not obj or not obj.pk:
@@ -144,8 +160,8 @@ class PersonalAdmin(ModelAdmin):
         
         if bienes_asignados.exists():
             html = '''
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+            <div style="overflow-x: auto; margin-bottom: 3rem;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 600px;">
                     <thead>
                         <tr style="background-color: #f9fafb; border-bottom: 2px solid #e5e7eb;">
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600; color: #374151;">Asignación</th>
@@ -212,8 +228,8 @@ class PersonalAdmin(ModelAdmin):
             </div>
             '''
         else:
-            html += '''
-            <div style="text-align: center; padding: 2rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+            html = '''
+            <div style="text-align: center; padding: 2rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb; margin-bottom: 3rem;">
                 <h4 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">
                     No hay bienes asignados
                 </h4>
@@ -222,8 +238,6 @@ class PersonalAdmin(ModelAdmin):
                 </p>
             </div>
             '''
-        
-        html += '</div>'
         
         return mark_safe(html)
     

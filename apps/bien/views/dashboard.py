@@ -12,7 +12,7 @@ def dashboard_callback(request, context):
     from apps.bien.models.bien import Bien
     from apps.bien.models.asignaciones import Asignacion
     from apps.bien.models.personal import Personal
-    from auxiliares.models.dependencia import Dependencia
+    from apps.auxiliares.models.dependencia import Dependencia
     from apps.auxiliares.models.catalogo_bienes import TipoBien, Estado, CondicionBien, Marca
     
     try:
